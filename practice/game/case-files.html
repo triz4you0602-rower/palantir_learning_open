@@ -1,0 +1,268 @@
+<meta charset="utf-8">
+<title>팔란티어 케이스 파일 — 진짜 문제를 찾아라</title>
+<style>
+  :root{
+    --bg:#eceef0; --panel:#ffffff; --ink:#1b2128; --ink-soft:#5c6672;
+    --line:rgba(27,33,40,.14); --line-strong:rgba(27,33,40,.3);
+    --accent:#1f6f6b; --accent-soft:rgba(31,111,107,.09);
+    --gold:#9a6a1a;
+    --good:#1f7a55; --good-soft:rgba(31,122,85,.09);
+    --trap:#b04a2c; --trap-soft:rgba(176,74,44,.09);
+    --track:#d7dbdf;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+    --serif:"Nanum Myeongjo",Georgia,"Batang",serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#101519; --panel:#191f25; --ink:#e7ecf1; --ink-soft:#94a1ad;
+      --line:rgba(231,236,241,.13); --line-strong:rgba(231,236,241,.3);
+      --accent:#4fb3ac; --accent-soft:rgba(79,179,172,.13);
+      --gold:#d6a44e;
+      --good:#4bb082; --good-soft:rgba(75,176,130,.13);
+      --trap:#df7a5a; --trap-soft:rgba(223,122,90,.13);
+      --track:#2a323a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101519; --panel:#191f25; --ink:#e7ecf1; --ink-soft:#94a1ad;
+    --line:rgba(231,236,241,.13); --line-strong:rgba(231,236,241,.3);
+    --accent:#4fb3ac; --accent-soft:rgba(79,179,172,.13); --gold:#d6a44e;
+    --good:#4bb082; --good-soft:rgba(75,176,130,.13);
+    --trap:#df7a5a; --trap-soft:rgba(223,122,90,.13); --track:#2a323a;
+  }
+  :root[data-theme="light"]{
+    --bg:#eceef0; --panel:#ffffff; --ink:#1b2128; --ink-soft:#5c6672;
+    --line:rgba(27,33,40,.14); --line-strong:rgba(27,33,40,.3);
+    --accent:#1f6f6b; --accent-soft:rgba(31,111,107,.09); --gold:#9a6a1a;
+    --good:#1f7a55; --good-soft:rgba(31,122,85,.09);
+    --trap:#b04a2c; --trap-soft:rgba(176,74,44,.09); --track:#d7dbdf;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:700px; margin:0 auto; padding:26px 20px 64px}
+  header{border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:8px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 6px}
+  h1{font-family:var(--serif); font-size:clamp(23px,4.8vw,33px); font-weight:800; letter-spacing:-.01em; margin:0; text-wrap:balance}
+  .sub{color:var(--ink-soft); font-size:13.5px; margin:8px 0 0; max-width:62ch}
+  .caveat{font-family:var(--mono); font-size:10.5px; color:var(--gold); margin:8px 0 0}
+  .progress{display:flex; gap:5px; align-items:center; margin-top:12px; font-family:var(--mono); font-size:11px; color:var(--ink-soft)}
+  .dots{display:flex; gap:4px}
+  .dot{width:9px; height:9px; border:1px solid var(--line-strong); border-radius:50%}
+  .dot.ok{background:var(--good); border-color:var(--good)}
+  .dot.miss{background:var(--trap); border-color:var(--trap)}
+  .dot.now{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft)}
+  /* case card */
+  .card{background:var(--panel); border:1px solid var(--line); padding:22px 22px 18px; margin-top:16px}
+  .file-tag{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); display:flex; justify-content:space-between; margin-bottom:10px}
+  .client{font-family:var(--serif); font-size:21px; font-weight:800; margin:0 0 2px}
+  .industry{font-size:12.5px; color:var(--ink-soft); margin:0 0 12px}
+  .stated{border-left:3px solid var(--line-strong); padding:8px 0 8px 14px; margin:0 0 6px; font-style:italic; color:var(--ink)}
+  .stated b{font-style:normal; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:3px}
+  .q{font-size:14px; font-weight:700; margin:14px 0 0}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:12px}
+  button.choice{font:inherit; font-size:14px; text-align:left; color:var(--ink); background:transparent; border:1px solid var(--line-strong); padding:11px 14px; cursor:pointer; line-height:1.5}
+  button.choice:hover:not([disabled]){background:var(--accent-soft); border-color:var(--accent)}
+  button.choice:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.choice[disabled]{opacity:.5; cursor:default}
+  button.choice.correct{border-color:var(--good); background:var(--good-soft)}
+  button.choice.wrong{border-color:var(--trap); background:var(--trap-soft)}
+  .choice .key{font-family:var(--mono); font-size:10.5px; color:var(--accent); margin-right:7px}
+  /* reveal */
+  .reveal{margin-top:14px; border:1px solid var(--line-strong); background:var(--accent-soft); padding:15px 16px}
+  .reveal .v{font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:6px}
+  .reveal.hit .v{color:var(--good)} .reveal.miss .v{color:var(--trap)}
+  .reveal h3{font-family:var(--serif); font-size:15px; margin:0 0 6px}
+  .reveal p{margin:0 0 8px; font-size:13.5px}
+  .outcome{font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700}
+  .src{font-size:11px; color:var(--ink-soft); margin-top:6px}
+  button.next{font:inherit; font-weight:700; margin-top:14px; background:var(--ink); color:var(--bg); border:none; padding:10px 20px; cursor:pointer}
+  button.next:hover{background:var(--accent); color:#fff}
+  button.next:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  /* debrief */
+  .grade{font-family:var(--serif); font-size:clamp(21px,4vw,27px); font-weight:800; margin:2px 0}
+  .grade-sub{color:var(--ink-soft); font-size:14px; margin:0 0 14px}
+  .synth{border-left:3px solid var(--accent); padding:6px 0 6px 14px; margin:12px 0; font-size:14px}
+  .steps{border-top:1px solid var(--line); margin-top:16px; padding-top:12px; font-size:13.5px}
+  .steps li{margin-bottom:5px}
+  .card.enter{animation:fade .22s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.card.enter{animation:none}}
+  code{font-family:var(--mono); font-size:.88em}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · Case Files</p>
+    <h1>팔란티어 케이스 파일</h1>
+    <p class="sub">전부 <b>실제 배포 사례</b>다. 고객이 "말한 것"을 읽고, FDE로서 첫 수를 골라라 — 표면 요구 뒤의 진짜 문제를 찾을 수 있는가?</p>
+    <p class="caveat">⚠ 아래 수치는 회사·벤더 보고값(홍보 성격). 방향은 신뢰하되 독립 검증 안 됨. 출처: knowledge/08</p>
+  </header>
+  <div class="progress"><span id="ptxt">CASE 1 / 6</span><div class="dots" id="dots"></div></div>
+  <main id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const CASES=[
+    { client:"Airbus", ind:"항공 제조 · A350 증산", num:"AX-350",
+      stated:"“A350 증산을 위한 제조 최적화 시스템을 만들어 주세요.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"제조 라인에 IoT 센서를 깔고 ML 최적화 모델을 구축한다.", ok:false,
+         why:"솔루션(도구) 우선. '최적화'라는 표면 요구를 그대로 받아 기술부터 골랐다."},
+        {t:"작업지시·누락 부품·품질 이슈를 한 화면에서 보게 한다 — “비행기 만드는 Asana”.", ok:true,
+         why:"재정의 적중. A350은 부품 500만 개 — 문제는 최적화 알고리즘이 아니라 상태가 여러 시스템에 흩어져 아무도 전체를 못 보는 것(가시성)이었다."},
+        {t:"전 공장 데이터를 레이크에 모으고 대시보드를 만든다.", ok:false,
+         why:"데이터·대시보드 함정. 모으는 것과 결정을 잇는 것은 다르다."},
+      ],
+      real:"진짜 문제는 <b>가시성</b>이었다. 통합 운영 화면으로 작업지시·부품·품질을 한 곳에.",
+      outcome:"결과(보고): A350 인도량 +33%, 이후 정비로 확장.",
+      src:"Palantir×Airbus / Nabeel Qureshi", pr:"원칙 5 — 진짜 문제 ≠ 표면 요구" },
+
+    { client:"Scuderia Ferrari", ind:"F1 모터스포츠", num:"FE-01",
+      stated:"“엔지니어에게 더 강력한 데이터 분석 도구를 달라.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"더 빠른 시뮬레이션 슈퍼컴퓨터를 도입한다.", ok:false,
+         why:"'더 강력한 도구' 요구를 액면 그대로. 분석력이 병목이라는 가정을 검증하지 않았다."},
+        {t:"엔지니어가 데이터 통합·청소에 쓰는 시간을 없애 핵심 업무에 집중하게 한다.", ok:true,
+         why:"재정의 적중. 병목은 분석력이 아니라, 엔지니어가 텔레메트리·부품·시뮬·테스트·피드백을 통합/청소하느라 정작 엔지니어링을 못 하는 것."},
+        {t:"새 BI 대시보드로 랩타임을 시각화한다.", ok:false,
+         why:"대시보드 함정. 보는 것은 엔지니어의 시간을 돌려주지 않는다."},
+      ],
+      real:"진짜 병목은 <b>데이터 통합에 낭비되는 엔지니어의 시간</b>이었다.",
+      outcome:"결과: 데이터를 통합해 엔지니어가 핵심 업무로 복귀.",
+      src:"Palantir Foundry (Ferrari)", pr:"원칙 6 — last-mile / 결정" },
+
+    { client:"Trinity Industries", ind:"철도 제조 · 송장 감사", num:"TR-88",
+      stated:"“송장 감사를 개선하고 싶다. 다른 벤더 셋이 수개월간 실패했다.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"온톨로지 위에 자동화 규칙을 부트캠프에서 즉시 얹는다.", ok:true,
+         why:"적중. 현실이 이미 온톨로지로 매핑돼 있어, 비기술팀이 규칙을 즉시 배포할 수 있었다 — 속도가 곧 해자."},
+        {t:"6개월 정밀 요구사항 분석부터 시작한다.", ok:false,
+         why:"인터뷰·명세 의존. 다른 벤더 셋이 실패한 바로 그 길이다."},
+        {t:"OCR AI로 송장 스캔을 자동화한다.", ok:false,
+         why:"솔루션 우선. 문제는 스캔이 아니었다."},
+      ],
+      real:"열쇠는 <b>이미 매핑된 온톨로지</b> — 비기술팀이 8시간 만에 규칙 배포.",
+      outcome:"결과(보고): 부트캠프 8시간 해결, 3개월 내 $30M 이익.",
+      src:"foundercoho — Ontology as Moat", pr:"자갈길→복리 · Trinity 8시간" },
+
+    { client:"SOMPO", ind:"보험 · 청구 심사", num:"SM-8000",
+      stated:"“AI로 보험금 청구를 자동 심사하게 해달라.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"청구서 텍스트를 LLM에 넣어 자동 승인/거절한다.", ok:false,
+         why:"솔루션 우선 + 위험. '자동 심사'를 액면대로 받으면 사람 결정 루프를 통째로 LLM에 넘긴다."},
+        {t:"청구 현황을 보여주는 실시간 대시보드를 만든다.", ok:false,
+         why:"대시보드 함정. 8,000명의 결정을 실행하지 못한다."},
+        {t:"청구 트리아지·사기 점검을 온톨로지 Action으로 만들어, 일 8,000명의 결정을 시스템 안에서 실행한다.", ok:true,
+         why:"적중. 병목은 판정 지능이 아니라 배치·수작업 핸드오프. 결정을 시스템 안 Action으로 실행해 루프를 닫았다."},
+      ],
+      real:"진짜 문제는 <b>결정과 행동 사이의 수작업 핸드오프</b>였다.",
+      outcome:"결과(보고): 일 8,000+ 사용자, 3년 $60M 이익 개선.",
+      src:"회사 보고 (SOMPO)", pr:"데이터→결정→행동 (03 §2)" },
+
+    { client:"글로벌 리테일러", ind:"소매 · 공급망", num:"RT-50",
+      stated:"“결품(품절)을 실시간으로 보는 대시보드를 만들어 주세요.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"요청대로 실시간 결품 대시보드를 구축한다.", ok:false,
+         why:"고객 비위 맞추기 + 대시보드 함정. 결품을 *보는* 것으로는 결품이 줄지 않는다."},
+        {t:"결품을 보는 게 아니라 발주·재배분 결정을 실행하는 컨트롤 타워를 만든다.", ok:true,
+         why:"적중. 고객은 대시보드를 요청했지만, 진짜 필요는 결정의 *실행*이었다. FDE는 요구가 아니라 결과에서 역산한다."},
+        {t:"수요 예측 ML 모델만 고도화한다.", ok:false,
+         why:"예측을 높여도 실행이 없으면 결품은 그대로."},
+      ],
+      real:"고객의 '대시보드' 요구를 <b>결정 실행 컨트롤 타워</b>로 재정의.",
+      outcome:"결과(보고): 결품 수준 약 50% 감소.",
+      src:"Unit8 case studies", pr:"대시보드 함정 · 원칙 7 결과 역산" },
+
+    { client:"General Mills", ind:"소비재 제조 · ERP", num:"GM-07",
+      stated:"“여러 ERP 데이터를 통합해 원가를 절감하고 싶다.”",
+      q:"FDE로서 첫 수는?",
+      opts:[
+        {t:"7개 레거시 ERP를 온톨로지로 통합하고, 부분 배포부터 시작한다.", ok:true,
+         why:"적중. 사일로 통합을 결정(생산·원가)에 잇고, 전체가 아니라 일부부터(자갈길). 며칠 규모로 시작."},
+        {t:"새 전사 ERP로 전면 교체한다 (2년 프로젝트).", ok:false,
+         why:"과잉 일반화·거대 프로젝트. 2년 뒤에야 값이 나고, 그동안 원가는 그대로."},
+        {t:"데이터 웨어하우스에 다 모으고 분석팀에 넘긴다.", ok:false,
+         why:"데이터 함정. 모으기 ≠ 결정에 잇기."},
+      ],
+      real:"7+ 레거시 ERP를 <b>온톨로지로 통합</b>, 부분 배포(자갈길)부터.",
+      outcome:"결과(보고): 일 약 $40k(연 ~$14M) 절감 — 네트워크 *일부*만 배포한 값.",
+      src:"회사 보고 (General Mills)", pr:"last-mile · 자갈길" },
+  ];
+
+  const stageEl=document.getElementById("stage");
+  const results=[]; let idx=0;
+
+  function renderDots(){
+    document.getElementById("ptxt").textContent=`CASE ${Math.min(idx+1,6)} / 6`;
+    document.getElementById("dots").innerHTML=CASES.map((_,i)=>{
+      let c=""; if(i<results.length) c=results[i]?"ok":"miss"; else if(i===idx) c="now";
+      return `<span class="dot ${c}"></span>`;
+    }).join("");
+  }
+  function show(){
+    if(idx>=CASES.length) return debrief();
+    renderDots();
+    const c=CASES[idx];
+    stageEl.innerHTML=`<div class="card enter">
+      <div class="file-tag"><span>CASE FILE · ${c.num}</span><span>실제 배포</span></div>
+      <p class="client">${c.client}</p><p class="industry">${c.ind}</p>
+      <div class="stated"><b>고객이 말한 것</b>${c.stated}</div>
+      <p class="q">${c.q}</p>
+      <div class="choices">${c.opts.map((o,j)=>`<button class="choice" data-j="${j}"><span class="key">${String.fromCharCode(65+j)}</span>${o.t}</button>`).join("")}</div>
+      <div id="rev"></div></div>`;
+    stageEl.querySelectorAll("button.choice").forEach(b=>b.addEventListener("click",()=>pick(+b.dataset.j)));
+  }
+  function pick(j){
+    const c=CASES[idx], o=c.opts[j];
+    results[idx]=o.ok;
+    const btns=stageEl.querySelectorAll("button.choice");
+    btns.forEach((b,k)=>{ b.disabled=true; if(c.opts[k].ok) b.classList.add("correct"); });
+    if(!o.ok) btns[j].classList.add("wrong");
+    renderDots();
+    stageEl.querySelector("#rev").innerHTML=`
+      <div class="reveal ${o.ok?"hit":"miss"}">
+        <span class="v">${o.ok?"진짜 문제를 찾았다":"표면에 걸렸다"}</span>
+        <p>${o.why}</p>
+        <h3>실제로 벌어진 일</h3>
+        <p>${c.real}</p>
+        <p class="outcome">${c.outcome}</p>
+        <p class="src">출처: ${c.src} · ${c.pr}</p>
+      </div>
+      <button class="next" id="go">${idx<CASES.length-1?"다음 케이스 파일":"수사 종결 — 결산"}</button>`;
+    document.getElementById("go").addEventListener("click",()=>{ idx++; show(); });
+    document.getElementById("go").focus();
+  }
+  function debrief(){
+    renderDots();
+    const score=results.filter(Boolean).length;
+    let grade, sub;
+    if(score===6){ grade="수석 FDE"; sub="여섯 산업 전부에서 표면 요구를 꿰뚫었다."; }
+    else if(score>=4){ grade="현장 FDE"; sub="대부분 진짜 문제를 찾았다. 걸린 케이스를 복기하라."; }
+    else if(score>=2){ grade="견습"; sub="표면 요구에 몇 번 걸렸다 — 도구·대시보드의 유혹."; }
+    else { grade="아직 컨설턴트"; sub="고객이 말한 것을 너무 믿었다."; }
+    stageEl.innerHTML=`<div class="card enter">
+      <div class="file-tag"><span>사건 요약</span><span>${score}/6</span></div>
+      <p class="grade">${grade} — ${score}/6</p><p class="grade-sub">${sub}</p>
+      <div class="synth">여섯 사례는 산업이 전부 다르지만 <b>같은 수(手)</b>가 반복됐다: 고객은 늘 '도구(AI·대시보드·최적화)'를 요구하지만, 진짜 문제는 그 아래 <b>가시성·통합·결정 실행</b>에 있었다. FDE는 요구가 아니라 <b>결정</b>에서 출발한다.</div>
+      <div class="steps"><b>복기 지도</b>
+        <ul>
+          <li>여섯 사례 전문·출처 → <code>knowledge/08</code></li>
+          <li>"결정에서 출발하라" 공식 방법론 → <code>Palantir: Delivering a use case</code></li>
+          <li>표면 요구를 재정의하는 법 → <code>knowledge/05</code> (리프레이밍)</li>
+          <li>이 수를 직접 연습 → <code>fde-simulator</code> · RPG 모드</li>
+        </ul></div>
+      <button class="next" id="replay">파일 다시 열기</button></div>`;
+    document.getElementById("replay").addEventListener("click",()=>{ results.length=0; idx=0; show(); });
+  }
+  show();
+})();
+</script>

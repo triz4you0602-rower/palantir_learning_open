@@ -1,0 +1,371 @@
+<meta charset="utf-8">
+<title>하드 모드 — 채택 전쟁 (성모힐병원)</title>
+<style>
+  :root{
+    --bg:#ece9e6; --panel:#ffffff; --ink:#211c17; --ink-soft:#6a6157;
+    --line:rgba(33,28,23,.14); --line-strong:rgba(33,28,23,.3);
+    --accent:#7a4a2b; --accent-soft:rgba(122,74,43,.09);
+    --pos:#3f7a4a; --neg:#b23b34; --warn:#c07a1e;
+    --cap:#7a4a2b; --mo:#2c50a8; --track:#d9d3ca;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+    --serif:"Nanum Myeongjo",Georgia,"Batang",serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#181410; --panel:#221d18; --ink:#ece4d9; --ink-soft:#a6998a;
+      --line:rgba(236,228,217,.13); --line-strong:rgba(236,228,217,.3);
+      --accent:#d19a6a; --accent-soft:rgba(209,154,106,.12);
+      --pos:#5fb06e; --neg:#e06a5f; --warn:#e0a94a;
+      --cap:#d19a6a; --mo:#7d95ff; --track:#332b22;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181410; --panel:#221d18; --ink:#ece4d9; --ink-soft:#a6998a;
+    --line:rgba(236,228,217,.13); --line-strong:rgba(236,228,217,.3);
+    --accent:#d19a6a; --accent-soft:rgba(209,154,106,.12);
+    --pos:#5fb06e; --neg:#e06a5f; --warn:#e0a94a;
+    --cap:#d19a6a; --mo:#7d95ff; --track:#332b22;
+  }
+  :root[data-theme="light"]{
+    --bg:#ece9e6; --panel:#ffffff; --ink:#211c17; --ink-soft:#6a6157;
+    --line:rgba(33,28,23,.14); --line-strong:rgba(33,28,23,.3);
+    --accent:#7a4a2b; --accent-soft:rgba(122,74,43,.09);
+    --pos:#3f7a4a; --neg:#b23b34; --warn:#c07a1e;
+    --cap:#7a4a2b; --mo:#2c50a8; --track:#d9d3ca;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px; margin:0 auto; padding:24px 18px 60px}
+  header{border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:12px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--neg); margin:0 0 6px}
+  h1{font-family:var(--serif); font-size:clamp(23px,4.6vw,32px); font-weight:800; letter-spacing:-.01em; margin:0; text-wrap:balance}
+  .sub{color:var(--ink-soft); font-size:13.5px; margin:6px 0 0; max-width:64ch}
+  /* HUD */
+  .hud{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px}
+  @media (max-width:560px){ .hud{grid-template-columns:1fr} }
+  .hud .box{background:var(--panel); border:1px solid var(--line); padding:9px 12px}
+  .hud .lab{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft)}
+  .hud .val{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:15px; font-weight:700; margin-top:2px}
+  .meter{height:6px; background:var(--track); margin-top:6px; position:relative}
+  .meter i{position:absolute; inset:0 auto 0 0; height:100%}
+  .meter.cap i{background:var(--cap)}
+  .meter.mo i{background:var(--mo)}
+  .deadline{color:var(--warn)}
+  /* stakeholders */
+  .stake-title{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin:16px 0 6px}
+  .stakes{display:flex; flex-direction:column; gap:6px}
+  .stake{background:var(--panel); border:1px solid var(--line); padding:8px 12px; display:grid; grid-template-columns:118px 1fr auto; gap:10px; align-items:center; font-size:13px}
+  @media (max-width:560px){ .stake{grid-template-columns:96px 1fr auto} }
+  .stake .who b{font-weight:700}
+  .stake .who small{display:block; color:var(--ink-soft); font-size:10.5px; font-family:var(--mono)}
+  .tmeter{height:8px; background:var(--track); position:relative; border-radius:0}
+  .tmeter .mid{position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--line-strong)}
+  .tmeter i{position:absolute; top:0; bottom:0}
+  .tmeter i.pos{left:50%; background:var(--pos)}
+  .tmeter i.neg{right:50%; background:var(--neg)}
+  .stake .st{font-family:var(--mono); font-size:10.5px; text-align:right; white-space:nowrap}
+  .st.ally{color:var(--pos)} .st.foe{color:var(--neg)} .st.neu{color:var(--ink-soft)}
+  .badge{font-family:var(--mono); font-size:9.5px; padding:1px 5px; border:1px solid; margin-left:4px}
+  .badge.sab{color:var(--neg); border-color:var(--neg)}
+  .badge.champ{color:var(--pos); border-color:var(--pos)}
+  .badge.intel{color:var(--accent); border-color:var(--accent)}
+  /* actions */
+  .panel{background:var(--panel); border:1px solid var(--line); padding:18px 18px 14px; margin-top:16px}
+  .panel h2{font-family:var(--serif); font-size:18px; margin:0 0 4px}
+  .turn-tag{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px}
+  .acts{display:flex; flex-direction:column; gap:7px; margin-top:10px}
+  button.act{font:inherit; font-size:13.5px; text-align:left; color:var(--ink); background:transparent; border:1px solid var(--line-strong); padding:10px 13px; cursor:pointer; line-height:1.45; display:flex; justify-content:space-between; gap:12px; align-items:baseline}
+  button.act:hover:not([disabled]){background:var(--accent-soft); border-color:var(--accent)}
+  button.act:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.act[disabled]{opacity:.4; cursor:default}
+  button.act .cost{font-family:var(--mono); font-size:11px; color:var(--cap); white-space:nowrap}
+  button.act.risk{border-style:dashed}
+  .log{margin-top:12px; display:flex; flex-direction:column; gap:8px}
+  .entry{padding:11px 13px; border:1px solid; font-size:13px}
+  .entry.good{border-color:var(--pos); background:rgba(63,122,74,.08)}
+  .entry.bad{border-color:var(--neg); background:rgba(178,59,52,.08)}
+  .entry.neu{border-color:var(--line-strong); background:var(--accent-soft)}
+  .entry .v{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:4px}
+  .entry.good .v{color:var(--pos)} .entry.bad .v{color:var(--neg)} .entry.neu .v{color:var(--accent)}
+  .entry .ref{color:var(--ink-soft); font-size:11.5px; margin-top:4px}
+  .delta{font-family:var(--mono); font-size:11px}
+  .delta .up{color:var(--pos)} .delta .dn{color:var(--neg)}
+  button.next{font:inherit; font-weight:700; margin-top:14px; background:var(--ink); color:var(--bg); border:none; padding:10px 20px; cursor:pointer}
+  button.next:hover{background:var(--accent); color:#fff}
+  button.next:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  /* endgame */
+  .grade{font-family:var(--serif); font-size:clamp(21px,4vw,27px); font-weight:800; margin:2px 0}
+  .grade-sub{color:var(--ink-soft); font-size:14px; margin:0 0 14px; max-width:60ch}
+  .epi{border-left:3px solid var(--pos); padding:5px 0 5px 14px; margin:12px 0; font-size:14.5px; font-family:var(--serif)}
+  .epi.bad{border-color:var(--neg)}
+  .next-steps{border-top:1px solid var(--line); margin-top:16px; padding-top:12px; font-size:13.5px}
+  .next-steps li{margin-bottom:5px}
+  .panel.enter{animation:enter .22s ease}
+  @keyframes enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel.enter{animation:none}}
+  code{font-family:var(--mono); font-size:.88em}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · Hard Mode — 정치 시스템</p>
+    <h1>채택 전쟁 — 성모힐병원</h1>
+    <p class="sub">온톨로지는 완성됐다. 기술은 정답이다. 하지만 <b>"기술적으로 완벽하나 운영상 무관한 것"</b>은 실패다. 8주 안에, 정치의 지뢰밭을 지나 이 시스템을 실제로 <b>채택</b>시켜라. — 이것이 Echo의 전장이다.</p>
+  </header>
+  <div id="hud"></div>
+  <p class="stake-title">이해관계자 신뢰 (−100 ← 적대 · 중립 · 우호 → +100)</p>
+  <div class="stakes" id="stakes"></div>
+  <main id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const DEADLINE=8, WIN=65;
+  const PEOPLE = {
+    wonjang:{name:"김원장", role:"원장 · 최고권력", hidden:"이사회 레거시·신관 예산. 석 달 안에 'AI 성과'를 보여야 한다."},
+    gwajang:{name:"정과장", role:"정형외과장 · 최대 반대", hidden:"신관 예산 경쟁자. 새 시스템이 자기 과의 높은 취소율을 노출할까 두렵다."},
+    sugan:{name:"박수간호사", role:"수간호사 · 현장 실권", hidden:"3년 전 컨설턴트에 데인 트라우마. 현장을 존중받고 싶다."},
+    idaeri:{name:"이대리", role:"의료정보팀 · 데이터 게이트", hidden:"만성 과로. 인정과 업무 경감을 원한다."},
+    jujuim:{name:"정주임", role:"원무 · 잠재 챔피언", hidden:"야근 탈출. 시스템이 자길 구해주길 바란다."},
+  };
+  const S={
+    week:1, cap:6, mo:0, acted:0,
+    t:{wonjang:10, gwajang:-25, sugan:-30, idaeri:0, jujuim:20},
+    intel:{}, flags:{coalition:false, rv:false, field:false, saboteur:false, threat:false, pilot:0},
+    over:false, ending:null, warnedGwa:0,
+  };
+  const clamp=(v,a=-100,b=100)=>Math.max(a,Math.min(b,v));
+  function d(obj){ // apply trust deltas, return html summary
+    let parts=[];
+    for(const k in obj){ S.t[k]=clamp(S.t[k]+obj[k]); parts.push(`${PEOPLE[k].name} <span class="${obj[k]>0?'up':'dn'}">${obj[k]>0?'+':''}${obj[k]}</span>`);}
+    return parts.join(" · ");
+  }
+
+  // ── actions ──
+  const A = [
+    {id:"field", label:"박수간호사와 수술부에서 하루 (현장 동행)", cost:2, risk:false,
+     show:()=>true, disable:()=>S.flags.field&&S.t.sugan>=40,
+     run:()=>{ const g=S.flags.field?12:32; S.flags.field=true; S.mo+=5;
+       return E("good","현장에서 얻은 신뢰", `초록 수술복을 갈아입고 하루를 서 있었다. "…앉아서 보고서만 쓰던 사람들과는 다르네요." 3년 전 컨설턴트의 그림자가 조금 걷혔다.`,
+         d({sugan:g})+` · 모멘텀 <span class="up">+5</span>`, "원칙 1 '사용자가 되어라' — knowledge/04"); }},
+
+    {id:"intel", label:"이해관계자의 숨은 의도 파악 (1인)", cost:1, risk:false, chooser:"intel",
+     show:()=>Object.keys(S.intel).length<5, disable:()=>false},
+
+    {id:"meet", label:"1:1 미팅 (1인)", cost:1, risk:false, chooser:"meet",
+     show:()=>true, disable:()=>false},
+
+    {id:"coalition", label:"프론트라인 연합 구축 (박수+정주임)", cost:2, risk:false,
+     show:()=>!S.flags.coalition, disable:()=>!(S.t.sugan>=5 && S.t.jujuim>=30),
+     run:()=>{ S.flags.coalition=true; S.mo+=8;
+       return E("good","아래로부터의 동력", `박수간호사와 정주임이 손을 잡았다. 현장이 스스로 도입을 밀기 시작한다 — 이제 매주 모멘텀이 저절로 쌓인다. 리더십의 '승인'보다 강한 것은 현장의 '채택'이다.`,
+         `모멘텀 <span class="up">+8</span> · 이후 매주 <span class="up">+7</span>`, "Delta 혼자면 운영상 무관해진다 — knowledge/01"); }},
+
+    {id:"rv", label:"정과장에게 Restricted View 제안 (그의 데이터는 그의 과 안에만)", cost:2, risk:false,
+     show:()=>S.intel.gwajang && !S.flags.rv, disable:()=>false,
+     run:()=>{ S.flags.rv=true; S.flags.threat=false; S.flags.saboteur=false;
+       return E("good","거버넌스 = 외교", `정과장의 진짜 공포는 '취소율 노출'이었다. 전사 공개가 아니라 <b>Restricted View</b>로 그의 데이터를 과 안에 가두고 집계만 공유하겠다 제안하자, 그의 어깨가 풀렸다. 적이 중립이 되었다. "숨기기가 아니라 안전하게 움직이기."`,
+         d({gwajang:45}), "knowledge/03 §5 · 데이터 통합의 정치 — knowledge/04"); }},
+
+    {id:"pilot", label:"소규모 파일럿 (정주임 원무팀)", cost:2, risk:true,
+     show:()=>true, disable:()=>false,
+     run:()=>{ const g=S.flags.pilot===0?20:10; S.flags.pilot++; S.mo+=g;
+       let extra="", cls="good";
+       if(S.t.gwajang<0 && !S.flags.rv){ S.flags.threat=true; cls="neu";
+         extra=` 하지만 시스템이 커지는 걸 본 정과장이 경계하기 시작했다 — 그의 데이터가 드러날까 봐. (Restricted View로 먼저 안심시켰어야.)`; }
+       return E(cls,"파일럿 가동", `정주임 팀에서 recordDelayCause가 돌기 시작했다. 4주치 데이터가 쌓이자 눈에 보이는 성과가 났다.${extra}`,
+         `모멘텀 <span class="up">+${g}</span>`+(S.flags.threat?` · 정과장 경계↑`:""), "자갈길로 현실 반응 얻기 — knowledge/04 원칙 4"); }},
+
+    {id:"interim", label:"원장에게 중간 보고 (데드라인 관리)", cost:1, risk:false,
+     show:()=>true, disable:()=>S.mo<15,
+     run:()=>{ let g=10, extra=""; if(S.intel.wonjang){ g=18; extra=` 이사회 레거시라는 그의 진짜 관심을 건드리자 눈빛이 달라졌다.`; }
+       S.warnedGwa=Math.max(0,S.warnedGwa-1);
+       return E("good","시간을 벌다", `"이사회에 보여줄 그림이 나오고 있습니다."${extra} 원장의 조바심이 가라앉았다.`,
+         d({wonjang:g}), "결과에서 역산 — knowledge/04 원칙 7"); }},
+
+    {id:"demo", label:"원장에게 직접 데모 (조기 성과 과시)", cost:1, risk:true,
+     show:()=>true, disable:()=>false,
+     run:()=>{ if(S.mo>=50){ S.mo+=5;
+         return E("good","때를 맞춘 데모", `충분한 모멘텀 위에서의 데모는 설득력이 있었다.`, d({wonjang:18})+` · 모멘텀 <span class="up">+5</span>`,""); }
+       let extra="";
+       if(!S.intel.gwajang || S.t.gwajang<0){ S.flags.threat=true; extra=` 게다가 정과장은 자기만 빼고 원장에게 보고된 걸 알고 격분했다 — 뒤통수를 맞았다고 느낀다.`; }
+       return E("bad","설익은 데모", `모멘텀도 없이 원장 앞에 선 데모는 공허했다.${extra}`,
+         d({wonjang:-8, gwajang:-15}), "옳은 문제·연합 없이 리더십부터 — 안티패턴"); }},
+
+    {id:"transparency", label:"투명성 강행 — 전 부서 취소율 대시보드 전사 공개", cost:1, risk:true,
+     show:()=>!S.flags.saboteur, disable:()=>false,
+     run:()=>{ S.mo+=10; S.flags.saboteur=true; S.flags.threat=true;
+       return E("bad","정치적 폭발", `취소율 랭킹이 전사에 공개되자 잠깐 화제가 됐다. 그리고 정과장이 폭발했다. 그는 이제 <b>능동적 사보타주</b>에 들어간다 — 원장에게 로비하고, 자기 과의 협조를 끊었다.`,
+         d({gwajang:-55})+` · 모멘텀 <span class="up">+10</span>(일시)`, "비난·노출 프레임의 대가 — knowledge/02"); }},
+
+    {id:"idaeri", label:"이대리 데이터 접근 요청 + 업무 경감 지원", cost:1, risk:false,
+     show:()=>true, disable:()=>false,
+     run:()=>{ let g=15, extra=""; if(!S.intel.idaeri){ g=8; }
+       else extra=` 과로를 알아주자 태도가 바뀌었다.`;
+       S.mo+=5;
+       return E("good","게이트키퍼를 아군으로", `데이터 접근이 열렸다.${extra} 게이트키퍼는 무시하면 장벽, 존중하면 통로다.`,
+         d({idaeri:g})+` · 모멘텀 <span class="up">+5</span>`, "게이트키퍼의 정치 — knowledge/04"); }},
+  ];
+
+  const stageEl=document.getElementById("stage");
+  function E(cls,verd,text,delta,ref){ return {cls,verd,text,delta,ref}; }
+
+  // ── render ──
+  function stLabel(v){ return v>=25?["ally","우호"]:v<=-25?["foe","적대"]:["neu","중립"]; }
+  function renderHUD(){
+    document.getElementById("hud").innerHTML=`
+      <div class="box"><span class="lab">주차 (데드라인 ${DEADLINE}주)</span><div class="val deadline">Week ${S.week} / ${DEADLINE}</div></div>
+      <div class="box"><span class="lab">채택 모멘텀 (목표 ${WIN})</span><div class="val">${S.mo}</div><div class="meter mo"><i style="width:${clamp(S.mo,0,100)}%"></i></div></div>
+      <div class="box"><span class="lab">정치 자본</span><div class="val">${S.cap}</div><div class="meter cap"><i style="width:${clamp(S.cap*8,0,100)}%"></i></div></div>
+      <div class="box"><span class="lab">이번 주 행동 (2/주)</span><div class="val">${S.acted} / 2</div></div>`;
+  }
+  function renderStakes(){
+    document.getElementById("stakes").innerHTML=Object.keys(PEOPLE).map(k=>{
+      const v=S.t[k], [c,lab]=stLabel(v);
+      const w=Math.abs(v)/2;
+      const bar=v>=0?`<i class="pos" style="width:${w}%"></i>`:`<i class="neg" style="width:${w}%"></i>`;
+      let badges="";
+      if(k==="gwajang"&&S.flags.saboteur) badges+=`<span class="badge sab">사보타주</span>`;
+      else if(k==="gwajang"&&S.flags.threat) badges+=`<span class="badge sab">경계</span>`;
+      if(k==="jujuim"&&S.flags.coalition) badges+=`<span class="badge champ">챔피언</span>`;
+      if(k==="sugan"&&S.flags.coalition) badges+=`<span class="badge champ">연합</span>`;
+      if(S.intel[k]) badges+=`<span class="badge intel">의도 파악</span>`;
+      return `<div class="stake"><div class="who"><b>${PEOPLE[k].name}</b><small>${PEOPLE[k].role}</small></div>
+        <div class="tmeter"><span class="mid"></span>${bar}</div>
+        <div class="st ${c}">${v>0?'+':''}${v} ${lab}${badges}</div></div>`;
+    }).join("");
+  }
+  function render(){ renderHUD(); renderStakes(); }
+
+  // ── turn ──
+  let pending=[]; // feedback entries this turn
+  function showTurn(){
+    render();
+    if(S.over) return showEnd();
+    const avail=A.filter(a=>a.show());
+    const acts=avail.map((a)=>{
+      const dis = S.acted>=2 || S.cap<a.cost || (a.disable&&a.disable());
+      let note="";
+      if(a.id==="coalition"&&!(S.t.sugan>=5&&S.t.jujuim>=30)) note=" (박수 ≥5 · 정주임 ≥30 필요)";
+      if(a.id==="interim"&&S.mo<15) note=" (모멘텀 ≥15 필요)";
+      return `<button class="act ${a.risk?'risk':''}" data-id="${a.id}" ${dis?'disabled':''}>
+        <span>${a.label}${note}</span><span class="cost">${a.cost}자본</span></button>`;
+    }).join("");
+    const logHtml=pending.map(e=>`<div class="entry ${e.cls}"><span class="v">${e.verd}</span><p>${e.text}</p>
+      ${e.delta?`<p class="delta">${e.delta}</p>`:""}${e.ref?`<p class="ref">${e.ref}</p>`:""}</div>`).join("");
+    stageEl.innerHTML=`<div class="panel enter">
+      <p class="turn-tag">Week ${S.week} — 무엇을 하겠는가 (남은 행동 ${2-S.acted})</p>
+      <h2>${weekHeadline()}</h2>
+      <div class="acts">${acts}</div>
+      <div class="log">${logHtml}</div>
+      <button class="next" id="endweek">${S.acted>0?'이번 주 마감':'행동 없이 마감'}</button>
+    </div>`;
+    document.querySelectorAll("button.act").forEach(b=>b.addEventListener("click",()=>onAct(b.dataset.id)));
+    document.getElementById("endweek").addEventListener("click", endWeek);
+  }
+  function weekHeadline(){
+    if(S.flags.saboteur) return "정과장이 원장실을 들락거린다. 시간이 없다.";
+    if(S.week>=6) return "이사회가 코앞이다. 원장의 인내가 바닥나고 있다.";
+    if(S.week>=4) return "원장이 '중간 성과'를 묻기 시작했다.";
+    return "첫 주. 아무도 아직 당신을 믿지 않는다.";
+  }
+  function onAct(id){
+    const a=A.find(x=>x.id===id); if(!a||S.acted>=2||S.cap<a.cost) return;
+    if(a.chooser) return showChooser(a);
+    S.cap-=a.cost; S.acted++; S.mo=clamp(S.mo,0,120);
+    pending.push(a.run()); showTurn();
+  }
+  function showChooser(a){
+    const targets=Object.keys(PEOPLE).filter(k=> a.chooser==="intel"? !S.intel[k] : true);
+    const list=targets.map(k=>`<button class="act" data-k="${k}"><span>${PEOPLE[k].name} — ${PEOPLE[k].role}</span></button>`).join("");
+    stageEl.querySelector(".acts").innerHTML=list+`<button class="act" data-k="__back"><span>← 취소</span></button>`;
+    stageEl.querySelectorAll(".acts button.act").forEach(b=>b.addEventListener("click",()=>{
+      const k=b.dataset.k; if(k==="__back") return showTurn();
+      S.cap-=a.cost; S.acted++;
+      if(a.chooser==="intel"){ S.intel[k]=true;
+        pending.push(E("neu","숨은 의도 파악",`<b>${PEOPLE[k].name}</b>: ${PEOPLE[k].hidden}`, "", "The Mom Test·JTBD — knowledge/05")); }
+      else { // meet
+        const base={wonjang:10,gwajang:8,sugan:6,idaeri:10,jujuim:12}[k];
+        const g=S.intel[k]?base+6:base;
+        pending.push(E("good","관계 구축",`${PEOPLE[k].name}와 1:1. ${S.intel[k]?"그의 진짜 관심을 알고 나누니 대화가 깊어졌다.":"의례적이지만 첫 신뢰가 쌓였다."}`, d({[k]:g}),""));
+      }
+      showTurn();
+    }));
+  }
+
+  function endWeek(){
+    pending=[];
+    // frontline engine
+    if(S.flags.coalition){ S.mo+=7; }
+    // saboteur / threat drag
+    if(S.flags.saboteur){ S.mo=clamp(S.mo-12,0,120); S.t.wonjang=clamp(S.t.wonjang-10); pending.push(E("bad","사보타주 진행",`정과장이 원장에게 시스템의 위험성을 흘리고 있다. 모멘텀과 원장 신뢰가 깎인다.`, `모멘텀 <span class="dn">-12</span> · ${PEOPLE.wonjang.name} <span class="dn">-10</span>`,"")); }
+    else if(S.flags.threat){ S.warnedGwa++; if(S.warnedGwa>=2){ S.mo=clamp(S.mo-8,0,120); pending.push(E("bad","경계가 저항으로",`방치된 정과장의 경계가 소극적 저항이 됐다. Restricted View로 해소하지 않으면 사보타주로 번진다.`,`모멘텀 <span class="dn">-8</span>`,"knowledge/03 §5")); } }
+    // 원장 impatience checkpoints
+    if(S.week===4 && S.mo<25){ S.t.wonjang=clamp(S.t.wonjang-20); pending.push(E("bad","원장의 경고",`"성과가 안 보이는데요." 중간 성과 부재로 원장의 신뢰가 급락했다.`,`${PEOPLE.wonjang.name} <span class="dn">-20</span>`,"")); }
+    if(S.week===6 && S.mo<45){ S.t.wonjang=clamp(S.t.wonjang-18); pending.push(E("bad","마지막 경고",`이사회가 임박했는데 그림이 없다.`,`${PEOPLE.wonjang.name} <span class="dn">-18</span>`,"")); }
+    // capital regen
+    S.cap+=3;
+    // early termination
+    if(S.t.wonjang<=-40){ S.over=true; S.ending="pulled"; return showEnd(); }
+    S.week++; S.acted=0;
+    if(S.week>DEADLINE){ S.over=true; S.ending=judge(); }
+    showTurn();
+  }
+
+  function judge(){
+    const adopt = S.mo>=WIN;
+    const frontline = S.t.sugan>=20;
+    const noSab = !S.flags.saboteur && !S.flags.threat;
+    const boss = S.t.wonjang>=0;
+    if(adopt && frontline && noSab && boss) return "win";
+    if(S.flags.saboteur) return "blewup";
+    if(boss && S.mo>=50 && !frontline) return "hollow";
+    if(adopt && !boss) return "orphan";
+    return "drift";
+  }
+
+  function showEnd(){
+    render();
+    const E2={
+      win:{g:"채택 성공 — 온톨로지가 병원의 운영이 되다", cls:"",
+        s:"기술이 아니라 조직을 풀었다. Delta의 설계에 Echo의 정치가 더해져 시스템이 실제로 살아 움직인다.",
+        e:`이사회에서 원장은 'AI' 대신 이렇게 말했다. "현장이 스스로 쓰고 있습니다." 정주임은 6시에 퇴근하고, 정과장은 자기 과의 Restricted View 대시보드를 매일 연다 — 아무에게도 노출되지 않으니까. 가동률 62→73%. 3년 전 컨설턴트가 못 넘은 벽을, 당신은 정치로 넘었다.`},
+      hollow:{g:"리더십 승인, 현장 외면", cls:"bad",
+        s:"원장은 사인했다. 박수간호사는 쓰지 않는다. 3년 전 그 보고서의 운명이다.",
+        e:`시스템은 켜져 있지만 화이트보드는 여전히 걸려 있다. "위에서 하라니 하는데요…" 현장의 채택 없는 승인은 종이 위의 승리다. Delta 홀로는 운영상 무관해진다.`},
+      blewup:{g:"정치적 폭발 — 프로젝트 좌초", cls:"bad",
+        s:"정과장을 적으로 돌린 대가. 옳은 시스템도 적대적 이해관계자 하나에 무너진다.",
+        e:`취소율을 만천하에 공개한 그날, 당신은 전투에서 이기고 전쟁에서 졌다. 정과장의 로비에 원장은 등을 돌렸다. 카프의 말이 옳았다 — 문제는 처음부터 기술이 아니라 대인관계였다.`},
+      orphan:{g:"고아가 된 성공", cls:"bad",
+        s:"현장은 쓰는데 원장이 등을 돌렸다. 후원 없는 도입은 오래 못 간다.",
+        e:`데드라인의 정치를 놓쳤다. 원장에게 '이사회에 보여줄 그림'을 제때 주지 못한 대가. 결과에서 역산했어야 했다.`},
+      drift:{g:"표류 — 데드라인 소진", cls:"bad",
+        s:"모멘텀도 신뢰도 임계치를 넘지 못한 채 8주가 끝났다.",
+        e:`너무 많은 문에 노크했고, 아무 문도 열지 못했다. 정치 자본은 흩뿌리는 게 아니라 한 곳에 모으는 것이다 — 먼저 현장 연합, 그다음 반대자 무력화, 그다음 리더십.`},
+      pulled:{g:"플러그가 뽑혔다", cls:"bad",
+        s:"원장의 신뢰가 바닥나 프로젝트가 조기 종료됐다.",
+        e:`원장은 성과도 안 보이고 잡음만 크다고 판단했다. 데드라인을 쥔 사람의 인내는 관리해야 할 자원이었다.`},
+    }[S.ending];
+    stageEl.innerHTML=`<div class="panel enter">
+      <p class="turn-tag">Campaign Debrief — 채택 판정 (Week ${Math.min(S.week,DEADLINE)})</p>
+      <p class="grade">${E2.g}</p><p class="grade-sub">${E2.s}</p>
+      <p class="delta" style="font-family:var(--mono);color:var(--ink-soft)">모멘텀 ${S.mo} · 원장 ${S.t.wonjang} · 정과장 ${S.t.gwajang} · 박수 ${S.t.sugan} · 연합 ${S.flags.coalition?"O":"X"} · RV ${S.flags.rv?"O":"X"} · 사보타주 ${S.flags.saboteur?"O":"X"}</p>
+      <div class="epi ${E2.cls}">${E2.e}</div>
+      <div class="next-steps"><b>복기 지도</b>
+        <ul>
+          <li>"기술적으로 맞으나 운영상 무관" = Delta 홀로의 실패 → <code>knowledge/01</code></li>
+          <li>거버넌스(Restricted View)로 정치를 푸는 법 → <code>knowledge/03 §5</code></li>
+          <li>근본 원인은 대개 대인관계·정치 (카프) · 데이터 통합의 정치 → <code>knowledge/04</code></li>
+          <li>게이트키퍼·숨은 의도 발굴 → <code>knowledge/05</code></li>
+        </ul></div>
+      <button class="next" id="replay">다시 도전</button>
+    </div>`;
+    document.getElementById("replay").addEventListener("click",()=>location.reload());
+  }
+
+  showTurn();
+})();
+</script>

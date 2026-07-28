@@ -1,0 +1,206 @@
+<meta charset="utf-8">
+<title>FDE 시뮬레이터 — 게임 허브</title>
+<style>
+  :root{
+    --bg:#e9e6e0; --panel:#faf8f4; --panel-2:#f1eee8; --ink:#1e1b16; --ink-soft:#635b50;
+    --line:rgba(30,27,22,.14); --line-strong:rgba(30,27,22,.28);
+    --accent:#1f6f6b; --accent-2:#b5623a; --accent-soft:rgba(31,111,107,.1);
+    --gold:#9a7018;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+    --serif:"Nanum Myeongjo",Georgia,"Batang",serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12100d; --panel:#1c1915; --panel-2:#232019; --ink:#ece6db; --ink-soft:#a99e8c;
+      --line:rgba(236,230,219,.12); --line-strong:rgba(236,230,219,.28);
+      --accent:#4fb3ac; --accent-2:#e08a5c; --accent-soft:rgba(79,179,172,.13); --gold:#d6a94e;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12100d; --panel:#1c1915; --panel-2:#232019; --ink:#ece6db; --ink-soft:#a99e8c;
+    --line:rgba(236,230,219,.12); --line-strong:rgba(236,230,219,.28);
+    --accent:#4fb3ac; --accent-2:#e08a5c; --accent-soft:rgba(79,179,172,.13); --gold:#d6a94e;
+  }
+  :root[data-theme="light"]{
+    --bg:#e9e6e0; --panel:#faf8f4; --panel-2:#f1eee8; --ink:#1e1b16; --ink-soft:#635b50;
+    --line:rgba(30,27,22,.14); --line-strong:rgba(30,27,22,.28);
+    --accent:#1f6f6b; --accent-2:#b5623a; --accent-soft:rgba(31,111,107,.1); --gold:#9a7018;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px; margin:0 auto; padding:32px 22px 72px}
+  /* hero */
+  .hero{border-bottom:2px solid var(--ink); padding-bottom:22px}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+  h1{font-family:var(--serif); font-size:clamp(30px,6.5vw,52px); font-weight:800; letter-spacing:-.02em; line-height:1.05; margin:0; text-wrap:balance}
+  .thesis{font-size:clamp(15px,2.2vw,17px); color:var(--ink-soft); margin:16px 0 0; max-width:60ch}
+  .thesis b{color:var(--ink)}
+  /* journey map */
+  .map{margin:22px 0 0; overflow-x:auto}
+  .map-track{display:flex; gap:0; align-items:stretch; min-width:min-content; font-family:var(--mono); font-size:11px}
+  .stage{display:flex; align-items:center; gap:8px; white-space:nowrap; color:var(--ink-soft)}
+  .stage .s{padding:3px 2px}
+  .stage .arw{color:var(--line-strong)}
+  .stage b{color:var(--accent)}
+  /* section */
+  .sec-title{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin:38px 0 4px; display:flex; align-items:center; gap:10px}
+  .sec-title::after{content:""; flex:1; height:1px; background:var(--line)}
+  .sec-note{font-size:13px; color:var(--ink-soft); margin:6px 0 14px; max-width:66ch}
+  /* game grid */
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+  @media (max-width:680px){ .grid{grid-template-columns:1fr} }
+  .game{position:relative; display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line); padding:18px 18px 16px; text-decoration:none; color:inherit; transition:border-color .16s, transform .16s, background .16s}
+  .game:hover{border-color:var(--accent); transform:translateY(-2px)}
+  .game:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .game .top{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px}
+  .game .ord{font-family:var(--mono); font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.05em}
+  .game .layer{font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); border:1px solid var(--line-strong); padding:2px 7px}
+  .game .icon{font-size:26px; line-height:1; margin-bottom:8px}
+  .game h3{font-family:var(--serif); font-size:19px; font-weight:800; margin:0 0 4px; letter-spacing:-.01em}
+  .game .tl{font-size:13.5px; color:var(--ink-soft); margin:0 0 10px; flex:1}
+  .game .trains{font-size:12px; color:var(--ink); border-top:1px dashed var(--line); padding-top:9px; margin-top:auto}
+  .game .trains b{font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:3px}
+  .game .cta{font-family:var(--mono); font-size:11px; color:var(--accent); margin-top:10px}
+  .game .cta::after{content:" →"}
+  .game.special{background:var(--panel-2); border-style:dashed}
+  .game.special .ord{color:var(--accent-2)}
+  .game.special .cta{color:var(--accent-2)}
+  /* two-column bottom */
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px}
+  @media (max-width:680px){ .cols{grid-template-columns:1fr} }
+  .panelbox{background:var(--panel); border:1px solid var(--line); padding:18px}
+  .panelbox h4{font-family:var(--serif); font-size:16px; margin:0 0 8px}
+  .panelbox ul{margin:0; padding-left:18px; font-size:13.5px}
+  .panelbox li{margin-bottom:5px}
+  .panelbox a{color:var(--accent); text-decoration:none}
+  .panelbox a:hover{text-decoration:underline}
+  .foot{margin-top:34px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-soft); max-width:70ch}
+  .foot b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="eyebrow">FDE Field Simulator · Game Hub</p>
+    <h1>팔란티어처럼 문제를 풀어라</h1>
+    <p class="thesis">한 번 잘 푸는 것은 <b>서비스</b>다. 옳은 문제를 찾아 결정과 행동으로 잇고, 반복되는 추상을 복리로 쌓는 것이 <b>제품</b>이다. 일곱 개의 게임으로 팔란티어 FDE의 사고를 — 그 힘과 무게까지 — 체득한다.</p>
+    <div class="map">
+      <div class="map-track">
+        <span class="stage"><span class="s"><b>발굴</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>정의</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>온톨로지</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>자갈길</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>복리</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>채택(정치)</b></span><span class="arw">→</span></span>
+        <span class="stage"><span class="s"><b>윤리</b></span></span>
+      </div>
+    </div>
+  </section>
+
+  <p class="sec-title">추천 여정 — 순서대로 플레이</p>
+  <p class="sec-note">각 게임은 새 탭에서 열립니다. ①부터 시작하되, 순서는 자유. 🎲 RPG는 아무 때나 Claude와 함께.</p>
+
+  <div class="grid">
+    <a class="game" href="https://claude.ai/code/artifact/1aabc890-b3d2-4ad5-927c-49f87fec2b2a" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">① 입문</span><span class="layer">실제 사례</span></div>
+      <div class="icon">🗂️</div>
+      <h3>케이스 파일</h3>
+      <p class="tl">Airbus·Ferrari·Trinity·SOMPO… 실제 배포 6건. 고객의 표면 요구 뒤 진짜 문제를 찾아라.</p>
+      <div class="trains"><b>훈련</b>표면 요구 ≠ 진짜 문제 · 산업 폭</div>
+      <span class="cta">플레이</span>
+    </a>
+
+    <a class="game" href="https://claude.ai/code/artifact/b3ba4d09-733b-4385-a094-97d1d731c96f" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">② 기본기</span><span class="layer">단일 배포 5단계</span></div>
+      <div class="icon">🧭</div>
+      <h3>FDE 시뮬레이터</h3>
+      <p class="tl">한빛로지스 파견. 숨은 곳 3가지 발굴, 5 Whys 사다리, 함정 카드, 8원칙 게이지.</p>
+      <div class="trains"><b>훈련</b>몰입·발굴·문제 정의</div>
+      <span class="cta">플레이</span>
+    </a>
+
+    <a class="game" href="https://claude.ai/code/artifact/8c35828e-f51c-4580-a7fb-9cac307a8f15" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">③ 모델링</span><span class="layer">온톨로지</span></div>
+      <div class="icon">🧩</div>
+      <h3>온톨로지 빌더</h3>
+      <p class="tl">병원 수술부 현실을 Object·Link·Action으로 설계. 루프 4칸을 채워 닫아라. (수행성 코다)</p>
+      <div class="trains"><b>훈련</b>현실을 개체·관계·행동으로</div>
+      <span class="cta">플레이</span>
+    </a>
+
+    <a class="game" href="https://claude.ai/code/artifact/0917402e-09b0-4c96-9657-f4dfcb7acf32" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">④ 복리</span><span class="layer">캠페인 메타</span></div>
+      <div class="icon">🛣️</div>
+      <h3>FDE 캠페인</h3>
+      <p class="tl">4개 파견에서 패턴을 primitive로 승격(n≥2 규칙). 자갈길이 고속도로가 되는 것을 체감. (도메인 드리프트)</p>
+      <div class="trains"><b>훈련</b>자갈길→고속도로 · 제품화</div>
+      <span class="cta">플레이</span>
+    </a>
+
+    <a class="game" href="https://claude.ai/code/artifact/f74d1f35-07df-4535-8ef8-ba0ed53f8dca" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">⑤ 정치</span><span class="layer">하드 모드</span></div>
+      <div class="icon">♟️</div>
+      <h3>채택 전쟁</h3>
+      <p class="tl">온톨로지는 완성됐다 — 이제 정치다. 5명의 신뢰·정치 자본·데드라인을 관리해 8주 안에 채택시켜라.</p>
+      <div class="trains"><b>훈련</b>조직 정치 · 거버넌스=외교</div>
+      <span class="cta">플레이</span>
+    </a>
+
+    <a class="game" href="https://claude.ai/code/artifact/ff168f8d-011c-47a8-adbb-3642503381fc" target="_blank" rel="noopener">
+      <div class="top"><span class="ord">⑥ 윤리</span><span class="layer">수행성</span></div>
+      <div class="icon">⚖️</div>
+      <h3>범주의 무게</h3>
+      <p class="tl">리스크 온톨로지를 설계하며 수행성 — 범주가 현실을 *생산*함 — 의 무게를 체험. '승리'가 없는 게임.</p>
+      <div class="trains"><b>훈련</b>분류는 정치다 · 책임</div>
+      <span class="cta">플레이</span>
+    </a>
+  </div>
+
+  <p class="sec-title">자유 훈련 — Claude와 함께</p>
+  <div class="grid">
+    <div class="game special">
+      <div class="top"><span class="ord">🎲 언제나</span><span class="layer">GM 모드</span></div>
+      <div class="icon">🎲</div>
+      <h3>RPG 모드</h3>
+      <p class="tl">Claude에게 <b>“RPG 시작”</b>(또는 “하드 RPG 시작”)이라고 말하면, Claude가 가상 고객사를 연기하는 게임 마스터가 된다. 자유 대화로 옳은 질문을 직접 만드는 훈련.</p>
+      <div class="trains"><b>훈련</b>질문 생성 · 실전 발굴</div>
+      <span class="cta">Claude에게 "RPG 시작"</span>
+    </div>
+    <div class="game special">
+      <div class="top"><span class="ord">🔴 실전</span><span class="layer">당신의 문제</span></div>
+      <div class="icon">🎯</div>
+      <h3>내 케이스 시작</h3>
+      <p class="tl">가상 시나리오를 넘어, 당신의 실제 문제에 5단계를 적용한다. <code>practice/case-template.md</code>를 복사하거나, Claude에게 <b>“Echo처럼 인터뷰해줘”</b>라고 요청.</p>
+      <div class="trains"><b>훈련</b>진짜 체득</div>
+      <span class="cta">practice/case-template.md</span>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panelbox">
+      <h4>📚 지식 베이스 (왜 이렇게 하는가)</h4>
+      <ul>
+        <li><a href="../../knowledge/01-fde-model.md">01</a> FDE 모델 — Echo/Delta</li>
+        <li><a href="../../knowledge/02-problem-solving-playbook.md">02</a> 문제 해결 5단계 플레이북</li>
+        <li><a href="../../knowledge/03-ontology.md">03</a> 온톨로지 (기술 핵심)</li>
+        <li><a href="../../knowledge/04-problem-solving-principles.md">04</a> 8원칙 + 카프의 관점</li>
+        <li><a href="../../knowledge/05-problem-discovery-canon.md">05</a> 문제 발굴의 보편 정전</li>
+        <li><a href="../../knowledge/06-ontology-critique.md">06</a> 온톨로지 비판·논쟁</li>
+        <li><a href="../../knowledge/07-ontology-politics-ethics.md">07</a> 온톨로지의 정치·윤리</li>
+        <li><a href="../../knowledge/08-case-studies.md">08</a> 실제 배포 사례집</li>
+      </ul>
+    </div>
+    <div class="panelbox">
+      <h4>🧪 실습 (직접 해보기)</h4>
+      <ul>
+        <li><a href="../case-template.md">케이스 템플릿</a> — 0단계 8원칙 + 5단계 + 발굴 도구</li>
+        <li><a href="../case-01-example-restaurant-noshow/README.md">case-01</a> 워크된 예시 (노쇼)</li>
+        <li><a href="../case-02-source-verification/README.md">case-02</a> 1차 문서 대조 검증</li>
+        <li><a href="GAME-DESIGN.md">GAME-DESIGN.md</a> — 게임 전체 설계</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="foot">이 게임들은 팔란티어 <b>Foundry 없이</b> 개념을 체득하기 위한 학습 도구다. 사례 수치는 회사·벤더 보고값(홍보 성격)이며 독립 검증되지 않았다 — 방향은 신뢰하되 정확한 수치는 <a href="../../knowledge/08-case-studies.md" style="color:var(--gold)">08</a> 참조. 팔란티어의 힘(효율·복리)뿐 아니라 그 <b>무게</b>(수행성·분류의 정치, <a href="../../knowledge/07-ontology-politics-ethics.md" style="color:var(--gold)">07</a>)까지 함께 다루는 것이 이 커리큘럼의 목표다.</p>
+</div>

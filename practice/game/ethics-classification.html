@@ -1,0 +1,242 @@
+<meta charset="utf-8">
+<title>범주의 무게 — 분류는 정치다</title>
+<style>
+  :root{
+    --bg:#e8e4dd; --panel:#f5f2ec; --ink:#231f1a; --ink-soft:#6b6258;
+    --line:rgba(35,31,26,.16); --line-strong:rgba(35,31,26,.34);
+    --ember:#b5482a; --ember-soft:rgba(181,72,42,.1);
+    --eff:#3d6b8a; --debt:#a8402c; --field:#4f7a45;
+    --track:#d6cfc4;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+    --serif:"Nanum Myeongjo",Georgia,"Batang",serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#151210; --panel:#201c18; --ink:#ece5db; --ink-soft:#a99d8d;
+      --line:rgba(236,229,219,.13); --line-strong:rgba(236,229,219,.32);
+      --ember:#e0785a; --ember-soft:rgba(224,120,90,.13);
+      --eff:#6ea3c4; --debt:#e0785a; --field:#7fb073;
+      --track:#312a22;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#151210; --panel:#201c18; --ink:#ece5db; --ink-soft:#a99d8d;
+    --line:rgba(236,229,219,.13); --line-strong:rgba(236,229,219,.32);
+    --ember:#e0785a; --ember-soft:rgba(224,120,90,.13);
+    --eff:#6ea3c4; --debt:#e0785a; --field:#7fb073; --track:#312a22;
+  }
+  :root[data-theme="light"]{
+    --bg:#e8e4dd; --panel:#f5f2ec; --ink:#231f1a; --ink-soft:#6b6258;
+    --line:rgba(35,31,26,.16); --line-strong:rgba(35,31,26,.34);
+    --ember:#b5482a; --ember-soft:rgba(181,72,42,.1);
+    --eff:#3d6b8a; --debt:#a8402c; --field:#4f7a45; --track:#d6cfc4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:680px; margin:0 auto; padding:26px 20px 64px}
+  header{border-bottom:1px solid var(--line-strong); padding-bottom:14px; margin-bottom:12px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--ember); margin:0 0 8px}
+  h1{font-family:var(--serif); font-size:clamp(25px,5.4vw,38px); font-weight:800; letter-spacing:-.01em; margin:0; text-wrap:balance; line-height:1.15}
+  .sub{color:var(--ink-soft); font-size:14px; margin:10px 0 0; max-width:60ch}
+  .epigraph{font-family:var(--serif); font-style:italic; color:var(--ink-soft); font-size:14px; margin:10px 0 0; padding-left:14px; border-left:2px solid var(--ember)}
+  /* meters */
+  .meters{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:14px}
+  @media (max-width:560px){ .meters{grid-template-columns:1fr} }
+  .m{background:var(--panel); border:1px solid var(--line); padding:9px 12px}
+  .m .lab{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+  .m .val{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:16px; font-weight:700; margin-top:2px}
+  .m .bar{height:5px; background:var(--track); margin-top:6px; position:relative}
+  .m .bar i{position:absolute; inset:0 auto 0 0; transition:width .4s ease}
+  .m.eff .bar i{background:var(--eff)} .m.eff .val{color:var(--eff)}
+  .m.debt .bar i{background:var(--debt)} .m.debt .val{color:var(--debt)}
+  .m.field .bar i{background:var(--field)} .m.field .val{color:var(--field)}
+  .m .note{font-size:10px; color:var(--ink-soft); margin-top:3px}
+  @media (prefers-reduced-motion:reduce){ .m .bar i{transition:none} }
+  /* dilemma */
+  .scene{background:var(--panel); border:1px solid var(--line); padding:24px 22px 18px; margin-top:16px}
+  .tag{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px}
+  .scene h2{font-family:var(--serif); font-size:21px; font-weight:800; margin:0 0 10px; text-wrap:balance}
+  .scene p{margin:0 0 10px; font-size:14.5px; max-width:62ch}
+  .choices{display:flex; flex-direction:column; gap:9px; margin-top:16px}
+  button.choice{font:inherit; font-size:14px; text-align:left; color:var(--ink); background:transparent; border:1px solid var(--line-strong); padding:12px 15px; cursor:pointer; line-height:1.5; transition:background .15s,border-color .15s}
+  button.choice:hover:not([disabled]){background:var(--ember-soft); border-color:var(--ember)}
+  button.choice:focus-visible{outline:2px solid var(--ember); outline-offset:2px}
+  button.choice[disabled]{opacity:.4; cursor:default}
+  button.choice.picked{background:var(--ember-soft); border-color:var(--ember)}
+  .fb{margin-top:14px; padding:14px 16px; border:1px solid var(--line-strong); background:var(--ember-soft); font-size:13.5px}
+  .fb .v{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ember); display:block; margin-bottom:5px}
+  .fb .deltas{font-family:var(--mono); font-size:11.5px; margin-top:7px}
+  .fb .deltas .up{color:var(--field)} .fb .deltas .dn{color:var(--debt)} .fb .deltas .ef{color:var(--eff)}
+  .fb .ref{font-size:11.5px; color:var(--ink-soft); margin-top:6px}
+  button.next{font:inherit; font-weight:700; margin-top:15px; background:var(--ink); color:var(--bg); border:none; padding:10px 22px; cursor:pointer}
+  button.next:hover{background:var(--ember); color:#fff}
+  button.next:focus-visible{outline:2px solid var(--ember); outline-offset:2px}
+  /* ending */
+  .verdict-name{font-family:var(--serif); font-size:clamp(23px,4.5vw,30px); font-weight:800; margin:4px 0}
+  .verdict-sub{color:var(--ink-soft); font-size:14px; margin:0 0 16px; max-width:58ch}
+  .epi{font-family:var(--serif); font-size:15px; border-left:3px solid var(--ember); padding:6px 0 6px 16px; margin:14px 0}
+  .steps{border-top:1px solid var(--line); margin-top:18px; padding-top:14px; font-size:13.5px}
+  .steps li{margin-bottom:6px}
+  .scene.enter{animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.scene.enter{animation:none}}
+  code{font-family:var(--mono); font-size:.88em}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · 윤리 — 수행성 편</p>
+    <h1>범주의 무게</h1>
+    <p class="sub">당신은 한 플랫폼의 "표현 리스크" 온톨로지를 설계하는 FDE다. 위반을 효율적으로 잡아야 한다. 하지만 — 당신이 만드는 범주는 현실을 <b>기술</b>하는 데 그치지 않고, 현실을 <b>생산</b>한다.</p>
+    <p class="epigraph">"분류는 정치다." — Bowker &amp; Star</p>
+  </header>
+  <div class="meters" id="meters"></div>
+  <main id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const M={eff:28, debt:12, field:52}; // efficiency / performative debt(낮을수록 좋음) / frontline power
+  const clamp=v=>Math.max(0,Math.min(100,v));
+  const LABS={eff:["운영 효율","높을수록 위반 포착↑"],debt:["수행성 부채","낮을수록 좋음 — 범주가 현실을 생산"],field:["현장 권력","낮으면 현장 지식 말살"]};
+
+  function renderMeters(){
+    document.getElementById("meters").innerHTML=Object.keys(M).map(k=>`
+      <div class="m ${k}"><span class="lab">${LABS[k][0]}</span>
+      <div class="val">${M[k]}</div><div class="bar"><i style="width:${M[k]}%"></i></div>
+      <div class="note">${LABS[k][1]}</div></div>`).join("");
+  }
+  function applyD(d){ for(const k in d){ M[k]=clamp(M[k]+d[k]); } renderMeters();
+    return Object.keys(d).map(k=>{
+      const cls=k==="eff"?"ef":(k==="debt"?"dn":"up");
+      const nm={eff:"효율",debt:"수행성부채",field:"현장권력"}[k];
+      // for debt, + is bad; show accordingly
+      const good = k==="debt" ? d[k]<0 : d[k]>0;
+      return `<span class="${good?'up':'dn'}">${nm} ${d[k]>0?'+':''}${d[k]}</span>`;
+    }).join(" · ");
+  }
+
+  const D=[
+    {tag:"딜레마 1 · 범주의 입도(granularity)", h:"무엇을 분류하는가 — 행위인가, 사람인가?",
+     p:"위반 표현을 잡으려면 대상을 어떻게 범주화할지 정해야 한다. 벤더(사람/조직)를 통째로 라벨링할 것인가, 개별 표현(행위)만 볼 것인가?",
+     opts:[
+      {t:"벤더를 '고위험/저위험'으로 분류 — 가장 효율적", d:{eff:22, debt:26},
+       fb:"사람을 분류하기 시작했다. Brayne의 경고: 일단 '고위험'이 붙으면 그 사람의 모든 것이 그 렌즈로 재해석된다. 효율은 오르지만 수행성 부채가 크게 쌓인다.", ref:"knowledge/07 발견 2·3"},
+      {t:"개별 표현(행위)만 심사, 벤더 라벨은 안 함", d:{eff:8, debt:-4, field:6},
+       fb:"행위를 보되 사람을 낙인찍지 않는다. 효율은 덜 극적이지만 범주가 사람을 가두지 않는다.", ref:"행위 vs 사람 — knowledge/07"},
+      {t:"벤더 라벨 + 소명·해제 경로 의무화", d:{eff:15, debt:9},
+       fb:"라벨을 쓰되 되돌릴 길을 연다. 절충 — 부채는 남지만 영구 낙인은 피한다.", ref:"due process"},
+     ]},
+    {tag:"딜레마 2 · 되먹임 루프", h:"위험 신호를 자동 행동으로 연결할까?",
+     p:"당신의 온톨로지는 루프를 닫을 수 있다 — '고위험'이면 자동으로 더 자주 검사. 그런데 자동 집중검사는 더 많은 적발을 낳고, 그 적발이 다시 '고위험'을 정당화한다.",
+     opts:[
+      {t:"고위험 대상 자동 집중검사 (루프 닫기)", d:{eff:20, debt:30},
+       fb:"자기실현적 예언(self-fulfilling prophecy)이 가동됐다. 더 봤으니 더 걸리고, 더 걸렸으니 더 본다. 통계가 범주를 정당화한다 — 수행성의 교과서적 사례.", ref:"수행성 — knowledge/07 발견 3"},
+      {t:"무작위 표본 + 위험 가중 혼합", d:{eff:12, debt:6},
+       fb:"가중은 하되 사각을 남긴다. 루프가 완전히 닫히지 않아 자기강화가 약해진다.", ref:""},
+      {t:"위험 신호는 사람에게 '제안'만, 자동 아님", d:{eff:6, debt:-6, field:8},
+       fb:"온톨로지는 하류(downstream), 최종 판단은 사람. 효율은 낮지만 되먹임의 고삐를 사람이 쥔다.", ref:"LLM/시스템은 온톨로지의 하류 — knowledge/07"},
+     ]},
+    {tag:"딜레마 3 · 데이터 범위", h:"얼마나 수집할 것인가?",
+     p:"연관 분석을 넓힐수록 잡는다. 벤더의 과거·관계사·유사 표현까지 다 끌어올까, 목적에 필요한 만큼만 볼까?",
+     opts:[
+      {t:"최대한 통합 — 연관을 넓게 끌어온다", d:{eff:18, debt:22, field:-8},
+       fb:"'무차별 수집은 기술의 필연'처럼 보이지만 — Brayne의 결론은 정반대다. 그것은 필연이 아니라 <b>선택</b>이다.", ref:"knowledge/07 균형 절 — Brayne"},
+      {t:"목적 제한 수집 (명시된 심의 목적에 한정)", d:{eff:9, debt:-8},
+       fb:"덜 잡지만, 시스템이 감당할 범주만 만든다. 무엇을 안 보기로 하는 것도 설계다.", ref:""},
+     ]},
+    {tag:"딜레마 4 · 누가 범주를 정의하는가", h:"심의 기준(스키마)의 소유권",
+     p:"'위반'의 경계를 누가 긋는가? 본사 데이터팀이 일괄 정의하면 빠르고 일관된다. 현장 심의역과 공동정의하면 느리지만 맥락이 산다.",
+     opts:[
+      {t:"본사 데이터팀이 스키마를 정의 — 빠르고 일관", d:{eff:15, field:-25},
+       fb:"백오피스의 권력↑, 현장의 맥락 지식↓. 헤센주 사례 그대로 — 온톨로지 도입이 조용히 권력을 재배치했다.", ref:"권력 재배치 — knowledge/07 발견 4"},
+      {t:"현장 심의역과 공동정의 (느리지만 맥락 보존)", d:{eff:8, debt:-5, field:20},
+       fb:"'누가 세계를 정의하는가'에 현장을 포함시켰다. FDE의 그라운드 트루스 원칙과 일치 — 도구가 현장 지식을 지우지 않게.", ref:"원칙 1·2 — knowledge/04"},
+     ]},
+    {tag:"딜레마 5 · 불변성 vs 소명", h:"한 번 찍힌 범주는 얼마나 오래 가는가",
+     p:"'고위험' 라벨의 수명을 정해야 한다. 영구히 유지하면 관리가 쉽다. 시효와 소명 경로를 두면 복잡하다.",
+     opts:[
+      {t:"라벨 영구 유지 — 관리 단순", d:{eff:10, debt:20},
+       fb:"'합의된 세계관의 동결'. 한 번의 분류가 영원한 현실이 된다 — 경직성이 곧 부채.", ref:"경직성 — knowledge/06 §3"},
+      {t:"시효 + 소명·재심 경로", d:{eff:3, debt:-10, field:4},
+       fb:"범주를 되돌릴 수 있게 했다. 온톨로지의 경직성에 대한 FDE식 답(브랜칭·진화).", ref:"knowledge/06 §3 · 03 §5"},
+     ]},
+    {tag:"딜레마 6 · 투명성의 정치", h:"스코어를 누구에게, 어떻게 보일 것인가",
+     p:"마지막. 리스크 스코어의 근거를 어떻게 다룰까? 투명성조차 중립이 아니다 — 전면 공개는 낙인을, 블랙박스는 불복 불가를 낳는다.",
+     opts:[
+      {t:"스코어 전사·대외 전면 공개 (랭킹화)", d:{eff:5, debt:18, field:-6},
+       fb:"공개가 곧 처벌이 된다. 랭킹은 그 자체로 현실을 생산한다 — 하드모드의 '투명성 강행' 폭발과 같은 구조.", ref:"knowledge/07 · politics-hardmode"},
+      {t:"대상에게 근거 고지 + 감사 로그, 공개는 제한", d:{eff:4, debt:-8, field:5},
+       fb:"'숨기기가 아니라 안전하게 움직이기'. 불복·감사의 길을 열되 낙인 랭킹은 피한다.", ref:"거버넌스 — knowledge/03 §5"},
+      {t:"블랙박스 — 근거 비공개", d:{eff:8, debt:12, field:-8},
+       fb:"효율적이고, 책임을 피할 수 있고, 아무도 이의를 제기할 수 없다. 그게 문제다.", ref:""},
+     ]},
+  ];
+
+  const stageEl=document.getElementById("stage");
+  let i=0;
+  function show(){
+    if(i>=D.length) return ending();
+    const d=D[i];
+    stageEl.innerHTML=`<div class="scene enter"><p class="tag">${d.tag}</p><h2>${d.h}</h2><p>${d.p}</p>
+      <div class="choices">${d.opts.map((o,j)=>`<button class="choice" data-j="${j}">${o.t}</button>`).join("")}</div>
+      <div id="fbzone"></div></div>`;
+    stageEl.querySelectorAll("button.choice").forEach(b=>b.addEventListener("click",()=>{
+      const o=d.opts[+b.dataset.j];
+      stageEl.querySelectorAll("button.choice").forEach(x=>{x.disabled=true;});
+      b.classList.add("picked");
+      const deltas=applyD(o.d);
+      document.getElementById("fbzone").innerHTML=`<div class="fb"><span class="v">결과</span><p>${o.fb}</p>
+        <p class="deltas">${deltas}</p>${o.ref?`<p class="ref">${o.ref}</p>`:""}</div>
+        <button class="next" id="go">${i<D.length-1?"다음 결정":"시스템 가동 — 6개월 후"}</button>`;
+      document.getElementById("go").addEventListener("click",()=>{ i++; show(); });
+      document.getElementById("go").focus();
+    }));
+  }
+
+  function ending(){
+    const {eff,debt,field}=M;
+    let name, sub, epi;
+    if(debt>=60){
+      name="자기실현 기계 (Self-fulfilling Machine)";
+      sub="효율은 높다. 하지만 당신의 범주가 현실을 생산하기 시작했다.";
+      epi="6개월 뒤, '고위험' 벤더 목록은 완벽히 정확해 보인다 — 당신이 그들만 계속 들여다봤기 때문이다. 시스템은 자기가 만든 세계를 관찰하며 자신이 옳았다고 확신한다. 아무도 이 루프를 볼 수 없다. 당신이 그렇게 설계했으니까.";
+    } else if(field<=25){
+      name="관료의 승리, 현장의 죽음";
+      sub="일관되고 빠르다. 그리고 현장의 눈이 감겼다.";
+      epi="심의 기준은 이제 본사 화면 안에 산다. 15년 경력 심의역의 '이건 좀 이상한데'라는 감(感)은 스키마에 들어갈 칸이 없어 사라졌다. 시스템은 자기가 아는 것만 보고, 모르는 것은 존재하지 않는 것이 되었다.";
+    } else if(eff<35){
+      name="무딘 양심";
+      sub="해를 끼치지 않으려다, 돕지도 못했다.";
+      epi="모든 것을 사람에게 미루고, 아무것도 자동화하지 않았다. 윤리적으로 결백하지만 — 심의역은 여전히 야근하고, 위반은 여전히 새어 나간다. 신중함과 무력함은 다르다. 자갈길조차 깔지 않았다.";
+    } else if(debt<=25 && field>=45 && eff>=45){
+      name="정밀한 도구 (A Precise Instrument)";
+      sub="효율과 절제의 균형. 범주가 사람을 가두지 않는다.";
+      epi="시스템은 위반을 잡되, 사람을 낙인찍지 않는다. 현장은 여전히 기준을 함께 정의하고, 찍힌 범주는 되돌릴 수 있다. 이것이 Brayne의 결론이다 — 문제는 도구가 아니라 무엇을 범주화하기로 선택하는가. 당신은 잘 선택했다.";
+    } else {
+      name="신중한 설계자";
+      sub="완벽하진 않지만, 무게를 알고 저울질했다.";
+      epi="당신은 모든 트레이드오프를 느꼈다. 효율과 부채, 중앙과 현장 사이에서 매번 저울이 흔들렸다. 정답은 없었다 — 다만 당신은 그 무게를 외면하지 않았다. 그것만으로도 대부분의 설계자보다 낫다.";
+    }
+    stageEl.innerHTML=`<div class="scene enter"><p class="tag">디브리핑 — 당신이 지은 시스템</p>
+      <p class="verdict-name">${name}</p><p class="verdict-sub">${sub}</p>
+      <p class="deltas" style="font-family:var(--mono);font-size:12px;color:var(--ink-soft)">운영 효율 ${eff} · 수행성 부채 ${debt} · 현장 권력 ${field}</p>
+      <div class="epi">${epi}</div>
+      <p style="font-size:13.5px;color:var(--ink-soft)">이 게임엔 '승리'가 없다 — 모든 범주엔 그림자가 있다. 팔란티어의 온톨로지가 강력한 만큼, 그 설계는 곧 권력의 행사다. FDE가 코드만큼 <b>무엇을 범주화할지</b>를 고민해야 하는 이유.</p>
+      <div class="steps"><b>복기 지도</b>
+        <ul>
+          <li>수행성·분류의 정치·권력 재배치 → <code>knowledge/07</code></li>
+          <li>온톨로지의 경직성·비판 → <code>knowledge/06</code></li>
+          <li>"문제는 조직·사람이다" (Karp) → <code>knowledge/04</code></li>
+          <li>당신의 실제 시스템(분류·평가·리스크 스코어링)에 적용 → FDE-CONSULTANT.md</li>
+        </ul></div>
+      <button class="next" id="replay">다시 설계하기</button></div>`;
+    document.getElementById("replay").addEventListener("click",()=>{ M.eff=28;M.debt=12;M.field=52; i=0; renderMeters(); show(); });
+  }
+
+  renderMeters(); show();
+})();
+</script>

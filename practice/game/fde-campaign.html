@@ -1,0 +1,422 @@
+<meta charset="utf-8">
+<title>FDE 캠페인 — 자갈길에서 고속도로까지</title>
+<style>
+  :root{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-soft:rgba(44,80,232,.08);
+    --kin:#a06a1f; --kin-soft:rgba(160,106,31,.1);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+      --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+      --accent:#7d95ff; --accent-soft:rgba(125,149,255,.12);
+      --kin:#d9a04a; --kin-soft:rgba(217,160,74,.13);
+      --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+      --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+      --gauge:#2a3341;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+    --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+    --accent:#7d95ff; --accent-soft:rgba(125,149,255,.12);
+    --kin:#d9a04a; --kin-soft:rgba(217,160,74,.13);
+    --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+    --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+    --gauge:#2a3341;
+  }
+  :root[data-theme="light"]{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-soft:rgba(44,80,232,.08);
+    --kin:#a06a1f; --kin-soft:rgba(160,106,31,.1);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px; margin:0 auto; padding:26px 20px 64px}
+  header{border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:12px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 6px}
+  h1{font-size:clamp(22px,4.5vw,30px); font-weight:800; letter-spacing:-.02em; margin:0; text-wrap:balance}
+  .sub{color:var(--ink-soft); font-size:13.5px; margin:6px 0 0; max-width:64ch}
+  /* status bar */
+  .status{display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; background:var(--panel); border:1px solid var(--line); padding:10px 14px; margin-top:10px; font-family:var(--mono); font-size:11.5px; color:var(--ink-soft)}
+  .status b{color:var(--ink); font-variant-numeric:tabular-nums}
+  .prim-chip{border:1px solid var(--kin); color:var(--kin); padding:2px 8px; font-size:10.5px}
+  .prim-chip.bad{border-color:var(--trap); color:var(--trap); text-decoration:line-through}
+  .card-chip{border:1px solid var(--line-strong); padding:2px 8px; font-size:10.5px}
+  /* scene */
+  .scene{background:var(--panel); border:1px solid var(--line); padding:22px 22px 18px; margin-top:14px}
+  .scene.hq{border-left:4px solid var(--kin)}
+  .stage-tag{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px}
+  .scene.hq .stage-tag{color:var(--kin)}
+  .scene h2{font-size:19px; font-weight:800; margin:0 0 10px; text-wrap:balance}
+  .scene p{margin:0 0 10px; max-width:64ch; font-size:14.5px}
+  .hint{font-size:12.5px; color:var(--ink-soft)}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:14px}
+  button.choice{font:inherit; font-size:14px; text-align:left; color:var(--ink); background:transparent; border:1px solid var(--line-strong); padding:11px 14px; cursor:pointer; line-height:1.5; transition:background .15s,border-color .15s}
+  button.choice:hover{background:var(--accent-soft); border-color:var(--accent)}
+  button.choice:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.choice[disabled]{opacity:.45; cursor:default}
+  button.choice.selected{background:var(--accent-soft); border-color:var(--accent)}
+  .choice .key{font-family:var(--mono); font-size:10.5px; color:var(--accent); margin-right:7px}
+  .choice .wk{font-family:var(--mono); font-size:10.5px; color:var(--kin); float:right}
+  .choice.prim-opt{border-color:var(--kin); background:var(--kin-soft)}
+  .feedback{margin-top:12px; padding:13px 15px; border:1px solid; font-size:13.5px}
+  .feedback.good{border-color:var(--good); background:var(--good-soft)}
+  .feedback.trap{border-color:var(--trap); background:var(--trap-soft)}
+  .feedback.neutral{border-color:var(--line-strong); background:var(--accent-soft)}
+  .feedback.kin{border-color:var(--kin); background:var(--kin-soft)}
+  .verdict{font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:5px}
+  .feedback.good .verdict{color:var(--good)}
+  .feedback.trap .verdict{color:var(--trap)}
+  .feedback.neutral .verdict{color:var(--accent)}
+  .feedback.kin .verdict{color:var(--kin)}
+  .feedback p{margin:0}
+  .ref{font-size:12px; color:var(--ink-soft); margin-top:5px}
+  button.next{font:inherit; font-weight:700; margin-top:14px; background:var(--ink); color:var(--bg); border:none; padding:10px 20px; cursor:pointer}
+  button.next:hover{background:var(--accent); color:#fff}
+  button.next:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  /* HQ promotion rows */
+  .promo{border:1px solid var(--line-strong); padding:12px 14px; margin-top:8px; display:flex; gap:12px; align-items:flex-start}
+  .promo input{margin-top:4px; accent-color:var(--kin)}
+  .promo .pname{font-weight:700}
+  .promo .pdesc{font-size:13px; color:var(--ink-soft)}
+  .promo .warn{font-size:12px; color:var(--trap)}
+  .promo .okn{font-size:12px; color:var(--good)}
+  /* debrief chart */
+  .grade{font-size:clamp(20px,4vw,26px); font-weight:800; margin:2px 0}
+  .grade-sub{color:var(--ink-soft); font-size:14px; margin:0 0 14px; max-width:60ch}
+  .score-line{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink-soft)}
+  .curve{margin:16px 0}
+  .cbar{display:grid; grid-template-columns:130px 1fr 60px; gap:10px; align-items:center; font-size:13px; margin-bottom:8px}
+  .cbar .track{height:12px; background:var(--gauge); position:relative}
+  .cbar .track i{position:absolute; inset:0 auto 0 0; background:var(--accent)}
+  .cbar.fast .track i{background:var(--good)}
+  .cbar .num{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; color:var(--ink-soft)}
+  .epi{border-left:3px solid var(--good); padding:4px 0 4px 14px; margin:14px 0; font-size:14.5px}
+  .epi.broken{border-color:var(--trap)}
+  .next-steps{border-top:1px solid var(--line); margin-top:16px; padding-top:12px; font-size:13.5px}
+  .next-steps li{margin-bottom:5px}
+  .scene.enter{animation:enter .24s ease}
+  @keyframes enter{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion: reduce){ .scene.enter{animation:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · Campaign — Layer B·C</p>
+    <h1>FDE 캠페인 — 자갈길에서 고속도로까지</h1>
+    <p class="sub">한 번 잘 푸는 것은 서비스다. 반복되는 추상을 뽑아 <b>복리</b>로 쌓는 것이 제품이다. 4개의 파견을 지나며 그 차이를 몸으로 확인하라.</p>
+  </header>
+  <div class="status" id="status"></div>
+  <main id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // ── patterns & primitives ──
+  const PAT = {
+    sig:       {name:"신호 포착 루프",     prim:"SignalLoop 템플릿",   desc:"현장 판단이 휘발되는 곳에 record Action을 심어 루프를 닫는 패턴"},
+    shadow:    {name:"그림자 채널 구조화", prim:"ShadowBridge 커넥터", desc:"단톡방·엑셀·화이트보드 등 비공식 채널 위에 구조화 계층을 얹는 패턴"},
+    bottleneck:{name:"하류 병목 링크",     prim:"ConstraintLink 모듈", desc:"하류 제약(침상·크레인·결재)을 상류 결정에 잇는 링크+Function 패턴"},
+  };
+  const S = {
+    weeks:0, mw:[0,0,0,0], mi:0,
+    cards:{sig:0, shadow:0, bottleneck:0},
+    prims:{},              // id -> 'solid' | 'premature'
+    premAccidents:0, field:false, docPath:false,
+    finale:{accepted:false, wins:0},
+  };
+  function spend(w){ S.weeks+=w; S.mw[S.mi]+=w; renderStatus(); }
+
+  // ── status bar ──
+  function renderStatus(){
+    const prims = Object.entries(S.prims).map(([id,st])=>
+      `<span class="prim-chip ${st==='premature'?'bad':''}">${PAT[id].prim}${st==='premature'?' (성급)':''}</span>`).join(" ") || '<span style="opacity:.6">없음</span>';
+    const cards = Object.entries(S.cards).filter(([,n])=>n>0).map(([id,n])=>
+      `<span class="card-chip">${PAT[id].name} ×${n}</span>`).join(" ") || '<span style="opacity:.6">없음</span>';
+    document.getElementById("status").innerHTML =
+      `<span>누적 <b>${S.weeks}주</b></span><span>미션 <b>${Math.min(S.mi+1,4)}/4</b></span>
+       <span>🧰 primitive: ${prims}</span><span>🃏 패턴 카드: ${cards}</span>`;
+  }
+
+  // ── missions data ──
+  const MISSIONS = [
+    { client:"달빛운송", ind:"물류", brief:"야간 배송 스타트업. 오배송률이 두 배로 뛰었고, CEO는 “배차 AI”를 원한다.",
+      d1:{field:"심야 물류센터에서 이틀 밤을 새운다", doc:"임원 워크숍에서 요구사항을 듣는다",
+          fieldFb:"새벽 2시, 베테랑 기사들의 단톡방과 관제팀의 개인 엑셀을 발견했다 — 진짜 배차는 거기서 일어난다.",
+          docFb:"깔끔한 요구사항 문서를 얻었다. 납작하고, 틀렸다."},
+      d2:{orgText:"오배송 판단 신호가 시스템 밖(단톡방·엑셀)에서만 돌아서", techText:"배차 알고리즘이 낡아서",
+          orgFb:"근본 원인은 조직 — 신호를 붙잡는 절차의 부재다.", techFb:"3주간 모델을 갈아끼웠지만 오배송률은 그대로. 입력할 신호가 없었다."},
+      d3:{manualText:"기록 Action + 규칙 riskScore를 처음부터 손으로 짓는다 (자갈길)",
+          manualFb:"5주의 수작업 끝에 루프가 닫혔다. 오배송률 절반. 그리고 — 이 구조, 어디서든 또 만날 것 같다."},
+      earns:m=>{ S.cards.sig++; if(S.field) S.cards.shadow++; return ["sig", ...(S.field?["shadow"]:[])]; } },
+    { client:"성모힐병원", ind:"의료", brief:"수술실 가동률 62%. 원장은 “AI 스케줄링”을 원한다. (그렇다 — 그 병원이다.)",
+      d1:{field:"새벽 6시 반, 수술부 참관에 들어간다", doc:"의료정보팀 이대리의 EMR 통계를 받는다",
+          fieldFb:"화이트보드, 취소 약어, 정주임의 저녁 야근 — 그리고 회복실 침상이 수술실을 역류시켜 막는 것을 봤다.",
+          docFb:"“시스템상으로는 다 기록됩니다.” — 저녁마다 몰아 넣어진 그 기록이다."},
+      d2:{orgText:"실적·취소 사유가 기록되지 않아 블록 배정이 늘 틀려서", techText:"스케줄링 알고리즘이 비효율적이어서",
+          orgFb:"물류에서 본 것과 같은 뼈대다 — 신호의 부재. 도메인은 달라도 추상은 같다.", techFb:"알고리즘을 최적화했지만 입력이 거짓이면 출력도 거짓이다. 3주 손실."},
+      d3:{primId:"sig", primText:"SignalLoop 템플릿 적용 — recordDelayCause로 인스턴스화",
+          primFb:"물류에서 추출한 템플릿이 병원에 그대로 앉는다. 5주짜리 작업이 1주로. 이것이 복리의 첫 맛이다.",
+          manualText:"기록 Action + 루프를 처음부터 손으로 짓는다 (자갈길)",
+          manualFb:"또 5주를 손으로 지었다. 다 짓고 보니 — 물류에서 지은 것과 구조가 똑같다. 이쯤이면 패턴이다."},
+      earns:m=>{ S.cards.sig++; if(S.field) S.cards.bottleneck++; return ["sig", ...(S.field?["bottleneck"]:[])]; } },
+    { client:"대양중공업", ind:"조선", brief:"용접 검사 재작업률 급증. 경영진은 “비전 AI 검사”를 원한다.",
+      d1:{field:"도크에서 검사반과 일주일을 보낸다", doc:"품질경영팀의 월간 보고서를 분석한다",
+          fieldFb:"검사반장들의 무전기+수첩 네트워크, 그리고 크레인 일정이 모든 공정을 역류시켜 막는 것을 발견했다.",
+          docFb:"보고서는 재작업률 '결과'만 안다. '왜'는 도크에만 있다."},
+      d2:{orgText:"검사 판단·보류 사유가 무전기와 수첩에서 증발해서", techText:"검사 장비의 정밀도가 낮아서",
+          orgFb:"세 번째 같은 뼈대. 이제 눈감고도 보인다.", techFb:"장비 탓이 아니었다. 3주 손실."},
+      d3:{primId:"sig", primText:"SignalLoop 템플릿 적용 — recordHoldCause로 인스턴스화",
+          primFb:"1주 만에 배포. 검사반장이 묻는다: “…이거 원래 우리 회사 만들려고 만든 거예요?” 아니요. 하지만 이제 누구의 것도 아니고 모두의 것이다.",
+          manualText:"또다시 처음부터 손으로 짓는다 (자갈길)",
+          manualFb:"세 번째 수작업 5주. 팀원이 말한다: “우리 이거 세 번째예요. 왜 템플릿이 없죠?”"},
+      earns:m=>{ S.cards.sig++; if(S.field){S.cards.shadow++; S.cards.bottleneck++;} return ["sig", ...(S.field?["shadow","bottleneck"]:[])]; } },
+  ];
+
+  const stageEl = document.getElementById("stage");
+  function scene(html, cls=""){ stageEl.innerHTML = `<div class="scene enter ${cls}">${html}</div>`; }
+  function btn(id, label){ return `<button class="next" id="${id}">${label}</button>`; }
+  function on(id, fn){ document.getElementById(id).addEventListener("click", fn); }
+
+  // ── intro ──
+  function showIntro(){
+    scene(`<p class="stage-tag">Campaign Briefing</p>
+      <h2>규칙은 하나 — 시간은 복리를 배신하지 않는다</h2>
+      <p>당신의 팀은 4개의 파견을 수행한다. 미션마다 <b>주(週)</b>를 쓴다. 미션 사이 <b>HQ 단계</b>에서, 현장에서 얻은 <b>패턴 카드</b>를 재사용 가능한 <b>primitive</b>로 승격할 수 있다.</p>
+      <p>단 — 팔란티어 PD의 철칙: <b>한 번 본 패턴은 아직 패턴이 아니다.</b> 두 번 이상 관찰된 추상만이 살아남는다.</p>
+      <p>마지막 파견은 <b>부트캠프</b>다. 2주. 툴킷이 없다면… 행운을 빈다.</p>
+      ${btn("go","첫 파견 출발")}`);
+    on("go", ()=>showD1());
+  }
+
+  // ── mission decisions ──
+  function fb(zone, verdict, label, text, ref, nextLabel, nextFn){
+    document.getElementById(zone).innerHTML =
+      `<div class="feedback ${verdict}"><span class="verdict">${label}</span><p>${text}</p>${ref?`<p class="ref">${ref}</p>`:""}</div>${btn("go",nextLabel)}`;
+    on("go", nextFn); document.getElementById("go").focus();
+  }
+  function choiceButtons(list){
+    return `<div class="choices">${list.map((c,i)=>
+      `<button class="choice ${c.prim?"prim-opt":""}" data-i="${i}"><span class="key">${String.fromCharCode(65+i)}</span>${c.text}<span class="wk">${c.wk}주</span></button>`).join("")}</div><div id="fbzone"></div>`;
+  }
+  function bindChoices(list){
+    document.querySelectorAll("button.choice").forEach(b=>{
+      b.addEventListener("click",()=>{
+        document.querySelectorAll("button.choice").forEach(x=>x.disabled=true);
+        b.classList.add("selected");
+        list[+b.dataset.i].run();
+      });
+    });
+  }
+
+  function showD1(){
+    const m = MISSIONS[S.mi]; S.field=false; S.docPath=false;
+    const list = [
+      {text:m.d1.field, wk:2, run:()=>{ spend(2); S.field=true;
+        fb("fbzone","good","현장 확보",m.d1.fieldFb,"원칙 1·2 — knowledge/04","다음: 문제 정의",showD2); }},
+      {text:m.d1.doc, wk:1, run:()=>{ spend(1); S.docPath=true;
+        fb("fbzone","trap","납작한 요구사항",m.d1.docFb,"맥락이 희소 — knowledge/04","다음: 문제 정의",showD2); }},
+    ];
+    scene(`<p class="stage-tag">Mission ${S.mi+1} · ${m.client} (${m.ind}) — 발굴</p>
+      <h2>${m.brief}</h2><p>어떻게 시작하는가?</p>${choiceButtons(list)}`);
+    bindChoices(list);
+  }
+  function showD2(){
+    const m = MISSIONS[S.mi];
+    const rework = S.docPath?3:0;
+    const list = [
+      {text:`근본 원인: ${m.d2.orgText} <b>(조직)</b>`, wk:1+rework, run:()=>{ spend(1+rework);
+        fb("fbzone", rework?"neutral":"good", rework?"정의 완료 — 재작업 비용 발생":"근본 원인 적중",
+          m.d2.orgFb + (rework?" (문서 기반 가설이 현장과 어긋나 재검증에 3주가 샜다.)":""),
+          "카프의 렌즈 — knowledge/04","다음: 구축",showD3); }},
+      {text:`근본 원인: ${m.d2.techText} <b>(기술)</b>`, wk:4+rework, run:()=>{ spend(4+rework);
+        fb("fbzone","trap","기술 가지 — 막다른 길",m.d2.techFb,"증상 vs 근본 — knowledge/05","다음: 구축 (교정 후)",showD3); }},
+    ];
+    scene(`<p class="stage-tag">Mission ${S.mi+1} · ${m.client} — 문제 정의</p>
+      <h2>이번에도 묻는다: 왜?</h2><p>5 Whys의 종착점을 골라라.${S.docPath?" <i>(현장을 건너뛴 대가가 여기서 청구된다.)</i>":""}</p>${choiceButtons(list)}`);
+    bindChoices(list);
+  }
+  function showD3(){
+    const m = MISSIONS[S.mi];
+    const list = [];
+    const pid = m.d3.primId;
+    if(pid && S.prims[pid]==="solid"){
+      const drift = S.mi>=2; // 3번째 배포쯤 세상이 변한다 — 도메인 드리프트
+      list.push({text:`🧰 ${m.d3.primText}${drift?" (도메인 드리프트 — 재적합)":""}`, wk:drift?2:1, prim:true, run:()=>{ spend(drift?2:1);
+        if(drift){ S.drift=true;
+          fb("fbzone","kin","PRIMITIVE 적용 — 단, 세상이 변했다",
+            "SignalLoop는 여전히 유효했다. 그러나 그 사이 조선업 검사 규제가 개정되고 채널이 무전기→태블릿으로 바뀌어, 템플릿을 그대로 앉힐 수 없었다. 1주가 아니라 <b>2주</b> — 재적합(re-fit)이 필요했다. 그래도 맨손 5주보다는 낫다. 교훈: primitive는 자산이지 <b>영구 진리</b>가 아니다. 온톨로지도 늙는다.",
+            "경직성 — knowledge/06 §3","미션 완료 보고",missionDone);
+        } else {
+          fb("fbzone","kin","PRIMITIVE 적용 — 고속도로",m.d3.primFb,"자갈길→고속도로 — knowledge/01","미션 완료 보고",missionDone);
+        } }});
+    }
+    if(pid && S.prims[pid]==="premature"){
+      list.push({text:`🧰 ${m.d3.primText} <i>(성급한 추상)</i>`, wk:4, prim:true, run:()=>{ spend(4);
+        delete S.prims[pid]; S.premAccidents++; renderStatus();
+        fb("fbzone","trap","성급한 추상 붕괴",
+          "1회 관찰로 승격한 추상은 이 현장의 결을 몰랐다. 템플릿이 깨져 3주 재작업 — 결국 손으로 마저 지었다. primitive는 폐기됐다 (패턴 카드는 남는다).",
+          "안티패턴: 과잉 일반화 — knowledge/02","미션 완료 보고",missionDone); }});
+    }
+    list.push({text:m.d3.manualText, wk:5, run:()=>{ spend(5);
+      fb("fbzone","good","자갈길 완공",m.d3.manualFb,"gravel road — knowledge/01","미션 완료 보고",missionDone); }});
+    scene(`<p class="stage-tag">Mission ${S.mi+1} · ${m.client} — 구축</p>
+      <h2>어떻게 짓는가?</h2><p>${pid && S.prims[pid] ? "툴킷에 쓸 수 있는 primitive가 있다." : "툴킷은 비어 있다. 손이 곧 도구다."}</p>${choiceButtons(list)}`);
+    bindChoices(list);
+  }
+  function missionDone(){
+    const m = MISSIONS[S.mi];
+    const earned = m.earns(m);
+    renderStatus();
+    const cardsHtml = earned.map(id=>`<span class="card-chip">${PAT[id].name} ×${S.cards[id]}</span>`).join(" ");
+    scene(`<p class="stage-tag">Mission ${S.mi+1} 완료 — ${m.client}</p>
+      <h2>파견 보고서</h2>
+      <p class="score-line">이번 미션 소요: <b>${S.mw[S.mi]}주</b> · 누적 ${S.weeks}주</p>
+      <p>획득한 패턴 카드: ${cardsHtml || "없음"}</p>
+      ${S.field?"":`<p class="hint">⚠ 현장을 건너뛰어 이 도메인의 추가 패턴(그림자 채널·병목)을 관찰하지 못했다 — 복리의 씨앗을 놓쳤다.</p>`}
+      ${btn("go","HQ로 복귀")}`);
+    on("go", showHQ);
+  }
+
+  // ── HQ ──
+  function showHQ(){
+    const promotable = Object.keys(PAT).filter(id=>S.cards[id]>=1 && S.prims[id]!=="solid");
+    let rows = promotable.map(id=>{
+      const n = S.cards[id];
+      const re = S.prims[id]==="premature";
+      return `<label class="promo"><input type="checkbox" data-id="${id}">
+        <span><span class="pname">${PAT[id].name} → ${PAT[id].prim}</span> <span class="pdesc">— ${PAT[id].desc} (승격 비용 2주)</span><br>
+        ${n>=2?`<span class="okn">✓ ${n}회 관찰 — 검증된 추상</span>`:`<span class="warn">⚠ ${n}회 관찰 — 아직 패턴이 아닐 수 있다 (성급한 추상 위험)</span>`}
+        ${re?`<br><span class="warn">이전 승격이 현장에서 깨졌던 이력 있음</span>`:""}</span></label>`;
+    }).join("");
+    if(!rows) rows = `<p class="hint">승격할 패턴 카드가 없다.</p>`;
+    scene(`<p class="stage-tag">HQ · 제품 형성 — 미션 ${S.mi+1} 이후</p>
+      <h2>PD 회의: 무엇을 고속도로로 승격하는가?</h2>
+      <p>현장(Delta)의 자갈길에서 반복 가능한 추상을 골라 <b>primitive</b>로 만든다. 다음 미션부터 툴킷에서 꺼내 쓴다.</p>
+      <p class="hint">철칙: 두 번 이상 관찰된 패턴만 확실하다. 한 번 본 것을 승격하면 — 현장이 가르쳐 줄 것이다.</p>
+      ${rows}<div id="fbzone"></div>${btn("go","결정 확정")}`, "hq");
+    on("go", ()=>{
+      const picked = [...document.querySelectorAll(".promo input:checked")].map(i=>i.dataset.id);
+      let msgs = [];
+      picked.forEach(id=>{
+        spend(2);
+        S.prims[id] = S.cards[id]>=2 ? "solid" : "premature";
+        msgs.push(S.cards[id]>=2
+          ? `<b>${PAT[id].prim}</b> 완성 — 검증된 추상. (${S.cards[id]}회 관찰)`
+          : `<b>${PAT[id].prim}</b> 제작… PD 리드가 눈썹을 올린다: "이거 한 번 본 거잖아요?"`);
+      });
+      renderStatus();
+      const html = msgs.length? msgs.map(t=>`<div class="feedback kin"><span class="verdict">Primitive 제작</span><p>${t}</p></div>`).join("")
+        : `<div class="feedback neutral"><span class="verdict">승격 보류</span><p>이번엔 툴킷에 손대지 않는다. 관찰이 더 필요하다는 판단 — 그것도 결정이다.</p></div>`;
+      document.getElementById("fbzone").innerHTML = html + btn("go2", S.mi<2?"다음 파견 출발":"…본사에 이상한 전화가 왔다");
+      document.querySelectorAll(".promo input").forEach(i=>i.disabled=true);
+      on("go2", ()=>{ S.mi++; if(S.mi<3) showD1(); else showFinaleOffer(); });
+    });
+  }
+
+  // ── finale ──
+  function showFinaleOffer(){
+    scene(`<p class="stage-tag">Mission 4 · 트리니티 모먼트</p>
+      <h2>“부트캠프 2주. 그 안에 증명하시죠.”</h2>
+      <p><b>태산산업</b> — 연매출 3조의 제조 대기업. CFO가 말한다: "다른 벤더 셋이 각각 6개월씩 실패했습니다. 당신들은 2주 드리죠. <b>송장 감사 병목</b>을 풀어내면 전사 계약입니다."</p>
+      <p>2주 안에 세 개의 서브 문제를 풀어야 한다. 손으로 짓기엔 각각 4주짜리다.</p>
+      <div class="choices">
+        <button class="choice" id="acc"><span class="key">A</span>부트캠프를 수락한다 — 툴킷을 믿는다<span class="wk">2주</span></button>
+        <button class="choice" id="dec"><span class="key">B</span>정중히 거절하고 6개월 정식 프로젝트를 제안한다<span class="wk">—</span></button>
+      </div><div id="fbzone"></div>`);
+    on("acc", ()=>{ S.finale.accepted=true; spend(2); showFinale(); });
+    on("dec", ()=>{ S.finale.accepted=false; showDebrief(); });
+  }
+  function showFinale(){
+    const ch = [
+      {id:"sig",       t:"① 송장-검수 판단이 담당자 머릿속에서 증발한다"},
+      {id:"bottleneck",t:"② 결재 라인 병목이 전체 지급 흐름을 역류시킨다"},
+      {id:"shadow",    t:"③ 조정 내역이 부서 간 이메일 스레드에만 존재한다"},
+    ];
+    let wins=0;
+    const rows = ch.map(c=>{
+      const p = S.prims[c.id];
+      if(p==="solid"){ wins++;
+        return `<div class="feedback kin"><span class="verdict">🧰 ${PAT[c.id].prim} 적용 — 이틀</span><p>${c.t} → 템플릿이 그대로 앉는다. 현장 담당자가 소름 돋는다는 표정으로 본다.</p></div>`;
+      }
+      if(p==="premature"){
+        return `<div class="feedback trap"><span class="verdict">성급한 추상 — 붕괴</span><p>${c.t} → 템플릿이 대기업의 결을 못 버티고 깨졌다. 시간 내 복구 불가.</p></div>`;
+      }
+      return `<div class="feedback trap"><span class="verdict">툴킷 없음 — 시간 초과</span><p>${c.t} → 손으로 지으면 4주. 데드라인은 2주. 이 서브 문제는 포기.</p></div>`;
+    }).join("");
+    S.finale.wins = wins;
+    scene(`<p class="stage-tag">Mission 4 · 태산산업 부트캠프 — Day 1~10</p>
+      <h2>툴킷이 열린다.</h2>${rows}
+      <p class="score-line">서브 문제 해결: <b>${wins}/3</b> ${wins>=2?"— 계약 성사":"— 계약 무산"}</p>
+      ${btn("go","캠페인 결산")}`);
+    on("go", showDebrief);
+  }
+
+  // ── debrief ──
+  function showDebrief(){
+    const declined = !S.finale.accepted;
+    const wins = S.finale.wins;
+    let grade, sub, epi, epiCls="";
+    if(!declined && wins===3){
+      grade="프로덕트 컴퍼니 — 마진 80%";
+      sub="세 번의 자갈길이 세 개의 고속도로가 되었고, 네 번째 고객은 8시간짜리 기적을 봤다. 서비스 회사에서 제품 회사로 — 팔란티어가 해낸 바로 그 전환이다.";
+      epi=`태산산업 CFO는 이사회에서 말했다: "6개월 걸린다던 걸 이틀 만에 하더군요." 3개월 뒤 임팩트 추산 <b>300억</b>. 경쟁사가 같은 걸 하려면 — 당신이 세 현장에서 흘린 시간을 처음부터 다시 흘려야 한다. <b>그것이 해자다.</b>`;
+    } else if(!declined && wins===2){
+      grade="전환기 — 하이브리드";
+      sub="계약은 땄지만 툴킷에 구멍이 있었다. 복리는 시작됐다 — 아직 절반이다.";
+      epi=`계약서에 서명하며 생각한다: 놓친 그 패턴, 어느 현장에서 두 번째 관찰을 흘려보냈던가.`;
+    } else if(!declined){
+      grade="서비스 회사 — 마진 32%";
+      sub="모든 문제를 매번 손으로 다시 풀었다. 훌륭한 컨설팅이었다 — 그리고 컨설팅일 뿐이었다.";
+      epiCls="broken";
+      epi=`태산산업은 다른 벤더를 찾았다. 당신의 팀은 유능하고, 바쁘고, 지쳐 있다. 매출은 난다. 복리는 없다. <b>현장 작업은 매출이 아니라 제품을 만들어내기 위해 존재한다</b> — 그 문장을 다시 읽을 시간이다.`;
+    } else {
+      grade="안전한 길 — 기회비용";
+      sub="6개월 프로젝트 제안은 정중히 거절당했다. '다른 벤더 셋도 그렇게 말했거든요.'";
+      epiCls="broken";
+      epi=`부트캠프는 도박이 아니었다 — 툴킷이 있다면. 트리니티의 8시간은 무모함이 아니라 <b>준비된 복리의 현금화</b>였다.`;
+    }
+    const maxW = Math.max(...S.mw.slice(0,3), 1);
+    const curve = [0,1,2].map(i=>{
+      const w=S.mw[i];
+      return `<div class="cbar ${w<=4?"fast":""}"><span>M${i+1} ${MISSIONS[i].client}</span>
+        <span class="track"><i style="width:${Math.round(w/maxW*100)}%"></i></span><span class="num">${w}주</span></div>`;
+    }).join("") + (S.finale.accepted?`<div class="cbar fast"><span>M4 태산산업</span><span class="track"><i style="width:${Math.round(2/maxW*100)}%"></i></span><span class="num">2주</span></div>`:"");
+    scene(`<p class="stage-tag">Campaign Debrief — 결산</p>
+      <p class="grade">${grade}</p><p class="grade-sub">${sub}</p>
+      <p class="score-line">총 ${S.weeks}주 · primitive ${Object.values(S.prims).filter(v=>v==="solid").length}개 · 성급한 추상 사고 ${S.premAccidents}회 ${S.finale.accepted?`· 피날레 ${wins}/3`:"· 피날레 회피"}</p>
+      <p class="hint" style="margin-top:14px"><b>복리 곡선</b> — 미션당 소요 시간. 이 곡선의 기울기가 곧 사업 모델이다.</p>
+      <div class="curve">${curve}</div>
+      <div class="epi ${epiCls}">${epi}</div>
+      <div class="next-steps"><b>복기 지도</b>
+        <ul>
+          <li>자갈길→고속도로, FDE/PD 분업 → <code>knowledge/01</code></li>
+          <li>트리니티 8시간 = 준비된 복리 → <code>knowledge/02</code></li>
+          <li>"오버피팅 걱정 마라, 일반화는 PD의 몫" · 마진 80% vs 32% → <code>knowledge/04</code> (Nabeel)</li>
+          <li>n=1 승격이 깨지는 이유 → 안티패턴: 과잉 일반화, <code>knowledge/02</code></li>
+        </ul></div>
+      ${btn("replay","새 캠페인 시작")}`);
+    on("replay", ()=>{
+      S.weeks=0; S.mw=[0,0,0,0]; S.mi=0;
+      S.cards={sig:0,shadow:0,bottleneck:0}; S.prims={}; S.premAccidents=0;
+      S.finale={accepted:false,wins:0}; renderStatus(); showIntro();
+    });
+  }
+
+  renderStatus(); showIntro();
+})();
+</script>

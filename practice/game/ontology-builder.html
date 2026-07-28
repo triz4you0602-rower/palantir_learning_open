@@ -1,0 +1,415 @@
+<meta charset="utf-8">
+<title>온톨로지 빌더 — 성모힐병원 수술부</title>
+<style>
+  :root{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-soft:rgba(44,80,232,.08);
+    --kin:#a06a1f; --kin-soft:rgba(160,106,31,.1);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+      --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+      --accent:#7d95ff; --accent-soft:rgba(125,149,255,.12);
+      --kin:#d9a04a; --kin-soft:rgba(217,160,74,.13);
+      --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+      --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+      --gauge:#2a3341;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+    --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+    --accent:#7d95ff; --accent-soft:rgba(125,149,255,.12);
+    --kin:#d9a04a; --kin-soft:rgba(217,160,74,.13);
+    --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+    --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+    --gauge:#2a3341;
+  }
+  :root[data-theme="light"]{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-soft:rgba(44,80,232,.08);
+    --kin:#a06a1f; --kin-soft:rgba(160,106,31,.1);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px; margin:0 auto; padding:26px 20px 64px}
+  header{border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:14px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 6px}
+  h1{font-size:clamp(22px,4.5vw,30px); font-weight:800; letter-spacing:-.02em; margin:0; text-wrap:balance}
+  .sub{color:var(--ink-soft); font-size:13.5px; margin:6px 0 0; max-width:64ch}
+  /* diagram */
+  .board{background:var(--panel); border:1px solid var(--line); padding:10px 10px 4px; margin-top:6px}
+  .legend{display:flex; gap:18px; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--ink-soft); padding:4px 8px 8px}
+  .legend i{display:inline-block; width:10px; height:10px; margin-right:5px; vertical-align:-1px}
+  .legend .sem i{border:2px solid var(--accent)}
+  .legend .kin i{border:2px solid var(--kin)}
+  svg{width:100%; height:auto; display:block}
+  .node rect{fill:var(--panel); stroke:var(--accent); stroke-width:1.6}
+  .node text{fill:var(--ink); font-family:var(--sans); font-size:13px; font-weight:700}
+  .node .tag{fill:var(--ink-soft); font-family:var(--mono); font-size:8.5px; font-weight:400; letter-spacing:.08em}
+  .node.kin rect{stroke:var(--kin); rx:18}
+  .link-line{stroke:var(--line-strong); stroke-width:1.4; fill:none; marker-end:url(#arr)}
+  .link-label{fill:var(--ink-soft); font-family:var(--mono); font-size:9.5px}
+  .act-line{stroke:var(--kin); stroke-width:1.4; fill:none; stroke-dasharray:none; marker-end:url(#arrk)}
+  .wb-line{stroke:var(--good); stroke-width:1.6; fill:none; stroke-dasharray:5 4; marker-end:url(#arrg)}
+  .wb-label{fill:var(--good); font-family:var(--mono); font-size:9.5px; letter-spacing:.06em}
+  .ghost{opacity:0; animation:pop .35s ease forwards}
+  @keyframes pop{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion: reduce){ .ghost{animation:none; opacity:1} }
+  /* loop gauge */
+  .loop{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:10px 0 0}
+  .seg{border:1px solid var(--line); padding:7px 10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--ink-soft); position:relative}
+  .seg::before{content:""; position:absolute; inset:auto 0 0 0; height:3px; background:var(--gauge)}
+  .seg.lit{color:var(--good); border-color:var(--good)}
+  .seg.lit::before{background:var(--good)}
+  .loop-title{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin:14px 0 6px}
+  /* rounds */
+  .scene{background:var(--panel); border:1px solid var(--line); padding:22px 22px 18px; margin-top:16px}
+  .stage-tag{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px}
+  .scene h2{font-size:18px; font-weight:800; margin:0 0 10px; text-wrap:balance}
+  .scene p{margin:0 0 10px; max-width:64ch; font-size:14.5px}
+  .hint{font-size:12.5px; color:var(--ink-soft)}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:14px}
+  button.choice{font:inherit; font-size:14px; text-align:left; color:var(--ink); background:transparent; border:1px solid var(--line-strong); padding:11px 14px; cursor:pointer; line-height:1.5; transition:background .15s,border-color .15s}
+  button.choice:hover{background:var(--accent-soft); border-color:var(--accent)}
+  button.choice:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.choice.selected{background:var(--accent-soft); border-color:var(--accent)}
+  button.choice[disabled]{opacity:.45; cursor:default}
+  .choice .key{font-family:var(--mono); font-size:10.5px; color:var(--accent); margin-right:7px}
+  .feedback{margin-top:12px; padding:13px 15px; border:1px solid; font-size:13.5px}
+  .feedback.good{border-color:var(--good); background:var(--good-soft)}
+  .feedback.trap{border-color:var(--trap); background:var(--trap-soft)}
+  .feedback.neutral{border-color:var(--line-strong); background:var(--accent-soft)}
+  .verdict{font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:5px}
+  .feedback.good .verdict{color:var(--good)}
+  .feedback.trap .verdict{color:var(--trap)}
+  .feedback.neutral .verdict{color:var(--accent)}
+  .feedback p{margin:0}
+  .ref{font-size:12px; color:var(--ink-soft); margin-top:5px}
+  button.next{font:inherit; font-weight:700; margin-top:14px; background:var(--ink); color:var(--bg); border:none; padding:10px 20px; cursor:pointer}
+  button.next:hover{background:var(--accent); color:#fff}
+  button.next:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.next[disabled]{opacity:.4; cursor:default}
+  /* debrief */
+  .grade{font-size:clamp(20px,4vw,26px); font-weight:800; margin:2px 0}
+  .grade-sub{color:var(--ink-soft); font-size:14px; margin:0 0 14px}
+  .epi{border-left:3px solid var(--good); padding:4px 0 4px 14px; margin:14px 0; font-size:14.5px}
+  .epi.broken{border-color:var(--trap)}
+  .score-line{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink-soft)}
+  .next-steps{border-top:1px solid var(--line); margin-top:16px; padding-top:12px; font-size:13.5px}
+  .next-steps li{margin-bottom:5px}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · Ontology Builder</p>
+    <h1>성모힐병원 수술부 — 현실을 모델링하라</h1>
+    <p class="sub">발굴은 끝났다. 화이트보드, 취소 약어, 정주임의 야근 — 이제 그 현실을 <b>개체·관계·행동</b>으로 붙잡을 차례다. 루프 게이지 4칸을 모두 채우면 온톨로지가 닫힌다.</p>
+  </header>
+
+  <div class="board">
+    <div class="legend">
+      <span class="sem"><i></i>SEMANTIC — 명사 (보기 위한 모델)</span>
+      <span class="kin"><i></i>KINETIC — 동사 (바꾸기 위한 모델)</span>
+    </div>
+    <div id="diagram"></div>
+    <p class="loop-title">루프 게이지 — 데이터 → 결정 → 행동 → 되먹임 (knowledge/03 §2)</p>
+    <div class="loop" id="loop">
+      <div class="seg" data-seg="0">① 신호 포착</div>
+      <div class="seg" data-seg="1">② 결정 연결</div>
+      <div class="seg" data-seg="2">③ 행동 정의</div>
+      <div class="seg" data-seg="3">④ 기록 되먹임</div>
+    </div>
+  </div>
+
+  <main id="stage" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // ── model state ──
+  const S = { objects:new Set(), props:new Set(), links:new Set(), actions:new Set(), effects:new Set(), misses:0, traps:0 };
+
+  // ── diagram geometry ──
+  const NODES = {
+    patient:  {x:60,  y:42,  w:112, h:38, label:"환자",           en:"Patient"},
+    surgery:  {x:262, y:112, w:140, h:50, label:"수술 케이스",     en:"Surgery"},
+    or:       {x:60,  y:190, w:132, h:38, label:"수술방",          en:"OperatingRoom"},
+    delay:    {x:478, y:64,  w:158, h:42, label:"지연·취소 이벤트", en:"DelayEvent"},
+    pacu:     {x:486, y:190, w:146, h:38, label:"회복실 침상",     en:"PACUBed"},
+  };
+  const ACTS = {
+    resched:{x:120, y:296, w:190, h:36, label:"rescheduleSurgery"},
+    record: {x:404, y:296, w:190, h:36, label:"recordDelayCause"},
+  };
+  const LINKS = {
+    undergoes:  {from:[172,64],  to:[276,118], lx:196, ly:76,  label:"undergoes",   need:["patient","surgery"]},
+    scheduledIn:{from:[268,152], to:[192,200], lx:196, ly:186, label:"scheduledIn", need:["surgery","or"]},
+    resultsIn:  {from:[402,126], to:[478,92],  lx:414, ly:96,  label:"resultsIn",   need:["surgery","delay"]},
+    requires:   {from:[396,150], to:[486,200], lx:414, ly:186, label:"requires",    need:["surgery","pacu"]},
+  };
+  function svgNode(id,n,kin){
+    return `<g class="node ${kin?"kin":""} ghost">
+      <rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${kin?18:3}"/>
+      <text x="${n.x+12}" y="${n.y+(kin?23:21)}">${n.label}</text>
+      ${kin?"":`<text class="tag" x="${n.x+12}" y="${n.y+33}">OBJECT · ${n.en}</text>`}
+    </g>`;
+  }
+  function renderDiagram(){
+    let inner = `<defs>
+      <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="context-stroke"/></marker>
+      <marker id="arrk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="context-stroke"/></marker>
+      <marker id="arrg" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="context-stroke"/></marker>
+    </defs>`;
+    Object.entries(LINKS).forEach(([id,l])=>{
+      if(S.links.has(id) && l.need.every(n=>S.objects.has(n)))
+        inner += `<g class="ghost"><path class="link-line" d="M${l.from[0]},${l.from[1]} L${l.to[0]},${l.to[1]}"/><text class="link-label" x="${l.lx}" y="${l.ly}">${l.label}</text></g>`;
+    });
+    Object.entries(NODES).forEach(([id,n])=>{ if(S.objects.has(id)) inner += svgNode(id,n,false); });
+    if(S.objects.has("surgery") && S.props.size){
+      const px = 262, py = 168;
+      inner += `<text class="link-label ghost" x="${px}" y="${py}">· ${[...S.props].join(" · ")}</text>`;
+    }
+    Object.entries(ACTS).forEach(([id,a])=>{
+      if(S.actions.has(id)){
+        inner += svgNode(id,a,true);
+        if(id==="resched" && S.objects.has("surgery"))
+          inner += `<path class="act-line ghost" d="M${a.x+a.w/2},${a.y} L318,166"/>`;
+        if(id==="record" && S.objects.has("delay"))
+          inner += `<path class="act-line ghost" d="M${a.x+a.w/2},${a.y} C520,240 548,160 552,110"/>`;
+      }
+    });
+    if(S.effects.has("log") && S.effects.has("notify") && S.actions.has("record") && S.objects.has("surgery")){
+      inner += `<g class="ghost"><path class="wb-line" d="M404,314 C300,340 200,260 268,158"/>
+        <text class="wb-label" x="216" y="286">writeback → 다음 결정의 입력</text></g>`;
+    }
+    document.getElementById("diagram").innerHTML =
+      `<svg viewBox="0 0 680 352" role="img" aria-label="온톨로지 다이어그램">${inner}</svg>`;
+    renderLoop();
+  }
+  function segStates(){
+    return [
+      S.objects.has("delay") && S.props.has("실제 소요시간"),
+      ["undergoes","scheduledIn","resultsIn","requires"].every(l=>S.links.has(l)),
+      S.actions.has("record") && S.actions.has("resched"),
+      S.effects.has("log") && S.effects.has("notify"),
+    ];
+  }
+  function renderLoop(){
+    const segs = segStates();
+    document.querySelectorAll(".seg").forEach((el,i)=>el.classList.toggle("lit", segs[i]));
+  }
+
+  // ── rounds ──
+  const ROUNDS = [
+    {
+      tag:"Round 1 · Semantic — Object Types", title:"이 수술부의 세계는 무엇으로 이루어져 있는가? (5개 선택)",
+      body:"화이트보드에 있던 것들을 떠올려라. <b>현실의 개체</b>만이 Object Type이 된다.",
+      pick:5,
+      items:[
+        {t:"수술 케이스 (Surgery)", ok:true, apply:()=>S.objects.add("surgery"),
+         fb:"모든 것의 중심 개체. 보드의 자석 명패 하나하나가 이것이다."},
+        {t:"AI 대시보드", ok:false,
+         fb:"대시보드는 현실의 개체가 아니라 뷰(view)다. 온톨로지 위에 얹는 화면이지, 온톨로지의 일부가 아니다.", ref:"knowledge/03 §2 — 대시보드 함정"},
+        {t:"수술방 (OperatingRoom)", ok:true, apply:()=>S.objects.add("or"),
+         fb:"방 8개 — 가동률 문제의 물리적 무대."},
+        {t:"화이트보드", ok:false,
+         fb:"보드는 매체(medium)이지 개체가 아니다. 모델링할 것은 보드 자체가 아니라 보드 위의 '내용' — 수술·지연·변경이다.", ref:"현실의 지도 ≠ 지도가 그려진 종이"},
+        {t:"지연·취소 이벤트 (DelayEvent)", ok:true, apply:()=>S.objects.add("delay"),
+         fb:"보드 여백의 약어들(<i>금식 X · 장비 미비 · 침상 없음</i>)이 드디어 살 곳이 생겼다. 이벤트도 개체다."},
+        {t:"가동률 62%", ok:false,
+         fb:"가동률은 파생 지표다 — Object가 아니라 <b>Function</b>이 계산한다. 저장하는 순간 낡기 시작한다.", ref:"knowledge/03 §4 — Function vs Object"},
+        {t:"환자 (Patient)", ok:true, apply:()=>S.objects.add("patient"),
+         fb:"금식 위반·검사 지연 — 취소 사유의 절반은 환자 상태에서 온다."},
+        {t:"회복실 침상 (PACUBed)", ok:true, apply:()=>S.objects.add("pacu"),
+         fb:"전화 릴레이가 조율하던 하류 병목. 이것을 개체로 승격해야 상류 스케줄과 연결된다."},
+        {t:"원장님의 기대", ok:false,
+         fb:"이해관계는 온톨로지가 아니라 Echo가 다룬다.", ref:"knowledge/01 — Echo의 영역"},
+      ]
+    },
+    {
+      tag:"Round 2 · Semantic — Properties", title:"Surgery 객체에 어떤 속성을 담는가? (3개 선택)",
+      body:"속성은 <b>결정에 쓰이는 사실</b>이어야 한다. EMR에 지금 없는 것이 무엇이었는지 기억하라.",
+      pick:3,
+      items:[
+        {t:"예약 블록 (시작 시각·예상 소요)", ok:true, apply:()=>S.props.add("예약 블록"),
+         fb:"계획 값 — 비교의 기준선."},
+        {t:"실제 소요시간", ok:true, apply:()=>S.props.add("실제 소요시간"),
+         fb:"바로 그 신호. 예약 vs 실제의 차이가 기록된 적이 없어서 블록 배정이 항상 틀렸다. 이 속성 하나가 ①번 게이지를 켠다."},
+        {t:"집도의 선호 서열", ok:false,
+         fb:"과장들의 정치를 속성으로 박제하면 데이터가 오염된다. 정치는 거버넌스·운영 설계(Echo)에서 다룬다.", ref:"knowledge/04 — 데이터 통합의 정치"},
+        {t:"상태 (예정/진행/완료/취소)", ok:true, apply:()=>S.props.add("상태"),
+         fb:"라이프사이클 없이는 이벤트를 걸 수 없다."},
+        {t:"AI 위험 점수", ok:false,
+         fb:"파생 값은 저장하지 않는다 — Function이 그때그때 계산한다. 저장된 점수는 낡은 점수다.", ref:"knowledge/03 §4"},
+        {t:"담당 간호사의 그날 기분", ok:false,
+         fb:"…박수간호사가 이 항목을 봤다면 파견은 오늘로 끝났다.", ref:"측정 가능하고 결정에 쓰이는 사실만"},
+      ]
+    },
+    {
+      tag:"Round 3 · Semantic — Link Types", title:"개체들을 어떻게 잇는가? (4개 선택)",
+      body:"링크는 <b>결정이 타고 흐르는 길</b>이다. 하류 병목을 상류 스케줄에 잇는 링크를 놓치지 마라.",
+      pick:4,
+      items:[
+        {t:"Patient —undergoes→ Surgery", ok:true, apply:()=>S.links.add("undergoes"),
+         fb:"환자 상태(금식·검사)가 수술 위험으로 흐르는 길."},
+        {t:"Surgery —scheduledIn→ OperatingRoom", ok:true, apply:()=>S.links.add("scheduledIn"),
+         fb:"보드의 격자가 곧 이 링크였다."},
+        {t:"DelayEvent —blames→ 집도의", ok:false,
+         fb:"비난 프레임을 링크로 만들면 아무도 지연을 기록하지 않게 된다 — 데이터가 스스로 마른다. RPG에서 이미 본 함정.", ref:"knowledge/02 — 하중 임시방편을 벌하지 마라"},
+        {t:"Surgery —resultsIn→ DelayEvent", ok:true, apply:()=>S.links.add("resultsIn"),
+         fb:"취소·지연은 수술의 결과 이벤트다. 이 링크가 있어야 사유 분석이 가능해진다."},
+        {t:"AI대시보드 —displays→ Surgery", ok:false,
+         fb:"뷰는 온톨로지 밖에 있다. 화면은 링크의 대상이 아니다.", ref:"knowledge/03 §2"},
+        {t:"Surgery —requires→ PACUBed", ok:true, apply:()=>S.links.add("requires"),
+         fb:"이 링크가 최간호사의 전화 릴레이를 대체할 기반이다. 하류 제약이 처음으로 상류 스케줄에 보이게 된다."},
+      ]
+    },
+    {
+      tag:"Round 4 · Kinetic — Action Types", title:"이 세계에서 무엇을 '할 수' 있어야 하는가? (2개 선택)",
+      body:"명사는 끝났다. 이제 동사 — <b>결정을 실행으로 바꾸는 Action</b>이다. 보는 것은 행동이 아니다.",
+      pick:2,
+      items:[
+        {t:"refreshDashboard — 수술 현황을 실시간 시각화", ok:false,
+         fb:"보는 것은 행동이 아니다. 사람이 읽고→판단하고→보드에 손으로 옮기는 끊어진 루프가 그대로 남는다.", ref:"knowledge/03 §2 — 끊어진 루프"},
+        {t:"recordDelayCause — 지연·취소 사유를 1탭 기록, DelayEvent 생성 + Surgery.실제소요시간 확정", ok:true, apply:()=>S.actions.add("record"),
+         fb:"보드 여백의 약어가 시스템의 일급 데이터가 된다. 4주만 쌓여도 블록 배정을 바꿀 근거가 처음으로 생긴다."},
+        {t:"exportToExcel — 김부장… 아니, 정주임의 엑셀로 내보내기", ok:false,
+         fb:"신호가 다시 개인 파일 속으로 사라진다. 임시방편의 영구화.", ref:"knowledge/02 — 안티패턴"},
+        {t:"rescheduleSurgery — 방·시간 변경을 시스템 안에서 실행 (보드 이동이 곧 데이터가 된다)", ok:true, apply:()=>S.actions.add("resched"),
+         fb:"전공의가 자석을 옮기던 그 동작이, 이제 기록되는 트랜잭션이 된다. 저녁의 '하루치 몰아 넣기'가 사라질 조건."},
+        {t:"punishLateEntry — 미입력 시 페널티 부과", ok:false,
+         fb:"비난 프레임의 Action 버전. 입력할 절차를 만들기 전에 벌부터 만들면, 사람들은 시스템 밖으로 더 깊이 숨는다.", ref:"knowledge/04 — 카프: 문제는 조직적이다"},
+      ]
+    },
+    {
+      tag:"Round 5 · Kinetic — Side Effects & 되먹임", title:"rescheduleSurgery에 어떤 부수효과를 붙이는가? (2개 선택)",
+      body:"Action Type은 변경 집합 + <b>부수효과 정의</b>를 함께 담는다. 루프의 마지막 칸 — 되먹임이다.",
+      pick:2,
+      items:[
+        {t:"관련과 자동 알림 (webhook) — 정형외과·마취과·회복실에 즉시 통지", ok:true, apply:()=>S.effects.add("notify"),
+         fb:"정주임의 전화 릴레이가 부수효과 한 줄로 대체된다. 그녀는 이제 조율하지 않는다 — 확인만 한다."},
+        {t:"야간 일괄 EMR 동기화 배치", ok:false,
+         fb:"그게 바로 오늘의 문제였다. '저녁에 몰아 맞추기'를 자동화하면 야근은 사라져도 <b>낮 동안의 거짓 데이터</b>는 그대로다.", ref:"실시간 writeback ≠ 야간 배치"},
+        {t:"Action Log 기록 — 누가·언제·왜 변경했는지 로그 객체 생성", ok:true, apply:()=>S.effects.add("log"),
+         fb:"변경 이력이 다음 블록 배정의 학습 데이터가 된다. 루프가 닫혔다: 행동이 다시 데이터가 되어 돌아온다.", },
+        {t:"대시보드 자동 새로고침", ok:false,
+         fb:"여전히 보기만 한다.", ref:"knowledge/03 — 대시보드는 루프를 닫지 못한다"},
+      ]
+    },
+  ];
+
+  // ── round engine ──
+  const stageEl = document.getElementById("stage");
+  let round = 0;
+  function showRound(){
+    const r = ROUNDS[round];
+    stageEl.innerHTML = `<div class="scene ghost">
+      <p class="stage-tag">${r.tag}</p><h2>${r.title}</h2><p>${r.body}</p>
+      <p class="hint">정확히 ${r.pick}개를 골라 확정하라.</p>
+      <div class="choices" id="opts"></div>
+      <button class="next" id="confirm" disabled>확정</button><div id="fbzone"></div>
+    </div>`;
+    const opts = document.getElementById("opts");
+    const picked = new Set();
+    r.items.forEach((it,i)=>{
+      const b=document.createElement("button");
+      b.className="choice"; b.innerHTML=`<span class="key">${String.fromCharCode(65+i)}</span>${it.t}`;
+      b.addEventListener("click",()=>{
+        if(picked.has(i)){picked.delete(i); b.classList.remove("selected");}
+        else if(picked.size<r.pick){picked.add(i); b.classList.add("selected");}
+        document.getElementById("confirm").disabled = picked.size!==r.pick;
+      });
+      opts.appendChild(b);
+    });
+    document.getElementById("confirm").addEventListener("click",()=>{
+      opts.querySelectorAll("button").forEach(b=>b.disabled=true);
+      document.getElementById("confirm").style.display="none";
+      let html="";
+      [...picked].sort((a,b)=>a-b).forEach(i=>{
+        const it=r.items[i];
+        if(it.ok){ it.apply && it.apply(); }
+        else { S.traps++; }
+        html += `<div class="feedback ${it.ok?"good":"trap"}">
+          <span class="verdict">${it.ok?"모델에 추가됨":"함정 — 모델에서 제외"}</span>
+          <p>${it.fb}</p>${it.ref?`<p class="ref">${it.ref}</p>`:""}</div>`;
+      });
+      const missed = r.items.filter((it,i)=>it.ok && !picked.has(i));
+      if(missed.length){
+        S.misses += missed.length;
+        html += `<div class="feedback neutral"><span class="verdict">놓친 조각 ${missed.length}</span>
+          <p>${missed.map(m=>`<b>${m.t}</b>`).join(" · ")} — 이 조각 없이는 루프 어딘가가 끊긴다. 디브리핑에서 확인하라.</p></div>`;
+      }
+      renderDiagram();
+      html += `<button class="next" id="go">${round<ROUNDS.length-1?"다음 라운드":"루프 판정"}</button>`;
+      document.getElementById("fbzone").innerHTML = html;
+      document.getElementById("go").addEventListener("click",()=>{
+        round++;
+        if(round<ROUNDS.length) showRound(); else showDebrief();
+      });
+      document.getElementById("go").focus();
+    });
+  }
+
+  function showDebrief(){
+    const segs = segStates();
+    const closed = segs.every(Boolean);
+    const segNames = ["① 신호 포착","② 결정 연결","③ 행동 정의","④ 기록 되먹임"];
+    const broken = segNames.filter((_,i)=>!segs[i]);
+    let grade, sub, epi, epiCls="";
+    if(closed && S.traps===0){
+      grade="온톨로지 아키텍트"; sub="함정 0, 루프 완결 — 의미 계층과 동적 계층을 한 번에 닫았다.";
+    } else if(closed){
+      grade="Delta"; sub=`루프는 닫혔다. 다만 함정 ${S.traps}회 — 개념 경계(Object vs Function vs View)를 복습하라.`;
+    } else if(segs.filter(Boolean).length>=2){
+      grade="견습 Delta"; sub="골격은 섰지만 루프가 끊겨 있다.";
+    } else {
+      grade="두꺼운 보고서"; sub="3년 전 컨설턴트의 운명이다 — 예쁘지만 아무것도 바뀌지 않는다.";
+    }
+    if(closed){
+      epi = `<b>3주 뒤.</b> 정주임은 18시에 퇴근했다 — '하루치 몰아 넣기'가 사라졌다. 박수간호사의 화이트보드는 여전히 걸려 있다. 다만 이제 보드는 시스템의 <b>뷰</b>이고, 진실은 온톨로지에 산다. 취소 사유 데이터 4주치가 쌓이자 블록 재배분을 논의할 <b>근거</b>가 처음 생겼고 — 정과장도 데이터 앞에서는 목소리를 낮췄다. 가동률 62% → 71%. 원장은 이사회에서 "AI"라는 단어를 한 번도 쓰지 않았다.`;
+    } else {
+      epiCls="broken";
+      epi = `<b>3주 뒤.</b> 시스템은 돌아가지만 ${broken.join(", ")} 칸이 비어 있다. 신호는 다시 보드 여백과 단톡방으로 새어 나가고, 정주임의 저녁은 여전히 길다. 끊긴 곳: <b>${broken.join(" · ")}</b> — 다시 지어라.`;
+    }
+    const coda = closed ? `<div class="epi" style="border-color:var(--kin)">
+      <b>…그리고 6개월 뒤. (수행성 코다)</b><br>
+      riskScore가 잘 돌아간다. 어쩌면 너무 잘. 한 번 '고지연'으로 찍힌 정형외과 3팀은 이제 스케줄에서 뒤로 밀리고, 어려운 케이스가 배정될 때마다 점수가 더 나빠진다. 그러자 그 팀은 <b>복잡한 수술을 기피</b>하기 시작했다 — 점수를 지키려고. 당신이 만든 범주가 현실을 기술하는 데 그치지 않고, <b>현실을 생산</b>하기 시작했다.<br>
+      <span style="color:var(--ink-soft)">당신은 루프를 닫았다. 그런데 <b>옳은 루프</b>였나? riskScore에 소명·시효 경로를 넣었나? 이 물음이 온톨로지 설계를 '역량'에서 '책임'으로 바꾼다.</span></div>` : "";
+    stageEl.innerHTML = `<div class="scene ghost">
+      <p class="stage-tag">디브리핑 — 온톨로지 판정</p>
+      <p class="grade">${grade}</p><p class="grade-sub">${sub}</p>
+      <p class="score-line">루프 ${segs.filter(Boolean).length}/4 · 함정 ${S.traps} · 놓친 조각 ${S.misses}</p>
+      <div class="epi ${epiCls}">${epi}</div>
+      ${coda}
+      <div class="next-steps"><b>복기 지도</b>
+        <ul>
+          <li>Object vs Function vs View의 경계 → <code>knowledge/03 §4</code></li>
+          <li>Action = 변경 집합 + 부수효과, Action Log는 대상과 1:N → <code>knowledge/03 §4 · 부록 A</code></li>
+          <li>수행성 — 범주가 현실을 생산한다 → <code>knowledge/07</code> · <code>ethics-classification.html</code></li>
+          <li>이 패턴("판단의 외부화 + 루프 닫기")은 다음 배포에서 <b>primitive</b>가 된다 → <code>GAME-DESIGN.md</code> Phase 4</li>
+        </ul></div>
+      <button class="next" id="replay">다시 짓기</button>
+    </div>`;
+    document.getElementById("replay").addEventListener("click",()=>{
+      S.objects.clear(); S.props.clear(); S.links.clear(); S.actions.clear(); S.effects.clear();
+      S.misses=0; S.traps=0; round=0; renderDiagram(); showRound();
+    });
+  }
+
+  renderDiagram(); showRound();
+})();
+</script>

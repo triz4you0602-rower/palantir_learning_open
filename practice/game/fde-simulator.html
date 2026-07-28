@@ -1,0 +1,480 @@
+<meta charset="utf-8">
+<title>FDE 시뮬레이터 — 한빛로지스 파견</title>
+<style>
+  :root{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-ink:#ffffff; --accent-soft:rgba(44,80,232,.08);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+    --mono:ui-monospace,"Cascadia Mono","D2Coding","Consolas",monospace;
+    --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+      --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+      --accent:#7d95ff; --accent-ink:#0f141c; --accent-soft:rgba(125,149,255,.12);
+      --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+      --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+      --gauge:#2a3341;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f141c; --panel:#171e29; --ink:#e6eaf1; --ink-soft:#93a0b2;
+    --line:rgba(230,234,241,.13); --line-strong:rgba(230,234,241,.3);
+    --accent:#7d95ff; --accent-ink:#0f141c; --accent-soft:rgba(125,149,255,.12);
+    --good:#43b48c; --good-soft:rgba(67,180,140,.12);
+    --trap:#e0785a; --trap-soft:rgba(224,120,90,.12);
+    --gauge:#2a3341;
+  }
+  :root[data-theme="light"]{
+    --bg:#eef0f1; --panel:#ffffff; --ink:#1a2330; --ink-soft:#5a6675;
+    --line:rgba(26,35,48,.14); --line-strong:rgba(26,35,48,.28);
+    --accent:#2c50e8; --accent-ink:#ffffff; --accent-soft:rgba(44,80,232,.08);
+    --good:#1e7d5f; --good-soft:rgba(30,125,95,.09);
+    --trap:#b8542e; --trap-soft:rgba(184,84,46,.09);
+    --gauge:#d8dce1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+    line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px; margin:0 auto; padding:28px 20px 64px}
+  /* ── mission header ─────────────────────── */
+  header{border-bottom:2px solid var(--ink); padding-bottom:14px; margin-bottom:8px}
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 6px}
+  h1{font-size:clamp(24px,5vw,32px); font-weight:800; letter-spacing:-.02em; margin:0; text-wrap:balance}
+  .sub{color:var(--ink-soft); font-size:14px; margin:6px 0 0}
+  /* ── stage tracker ─────────────────────── */
+  .tracker{display:flex; flex-wrap:wrap; gap:6px 14px; padding:12px 0; font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--ink-soft)}
+  .tracker span{white-space:nowrap}
+  .tracker .done{color:var(--good); text-decoration:line-through; text-decoration-thickness:1px}
+  .tracker .now{color:var(--accent); font-weight:700}
+  /* ── scene card ─────────────────────── */
+  .scene{background:var(--panel); border:1px solid var(--line); padding:24px 24px 20px; margin-top:8px}
+  .stage-tag{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px}
+  .scene h2{font-size:20px; font-weight:800; letter-spacing:-.01em; margin:0 0 12px; text-wrap:balance}
+  .scene p{margin:0 0 12px; max-width:62ch}
+  .quote{border-left:3px solid var(--line-strong); padding:2px 0 2px 14px; color:var(--ink-soft); font-style:normal; margin:14px 0}
+  .hint{font-size:13px; color:var(--ink-soft); margin-top:14px}
+  /* ── choices ─────────────────────── */
+  .choices{display:flex; flex-direction:column; gap:10px; margin-top:18px}
+  button.choice{
+    font:inherit; text-align:left; color:var(--ink);
+    background:transparent; border:1px solid var(--line-strong);
+    padding:13px 16px; cursor:pointer; line-height:1.55;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  button.choice:hover{background:var(--accent-soft); border-color:var(--accent)}
+  button.choice:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.choice[disabled]{opacity:.45; cursor:default}
+  button.choice.selected{background:var(--accent-soft); border-color:var(--accent)}
+  .choice .key{font-family:var(--mono); font-size:11px; color:var(--accent); margin-right:8px}
+  /* ── feedback ─────────────────────── */
+  .feedback{margin-top:18px; padding:16px 18px; border:1px solid; font-size:14.5px}
+  .feedback.good{border-color:var(--good); background:var(--good-soft)}
+  .feedback.trap{border-color:var(--trap); background:var(--trap-soft)}
+  .feedback.neutral{border-color:var(--line-strong); background:var(--accent-soft)}
+  .verdict{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; display:block; margin-bottom:8px}
+  .feedback.good .verdict{color:var(--good)}
+  .feedback.trap .verdict{color:var(--trap)}
+  .feedback.neutral .verdict{color:var(--accent)}
+  .feedback p{margin:0 0 8px}
+  .feedback p:last-child{margin:0}
+  .ref{font-size:12.5px; color:var(--ink-soft)}
+  button.next{
+    font:inherit; font-weight:700; margin-top:16px;
+    background:var(--ink); color:var(--bg); border:none;
+    padding:11px 22px; cursor:pointer;
+  }
+  button.next:hover{background:var(--accent); color:var(--accent-ink)}
+  button.next:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  /* ── principle gauge ─────────────────────── */
+  .gauge{margin-top:22px; border-top:1px solid var(--line); padding-top:14px}
+  .gauge-title{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px}
+  .chips{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+  @media (max-width:520px){ .chips{grid-template-columns:repeat(2,1fr)} }
+  .chip{border:1px solid var(--line); padding:7px 9px 8px}
+  .chip .cname{font-size:11px; color:var(--ink-soft); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .chip .bar{height:4px; background:var(--gauge); margin-top:6px; position:relative}
+  .chip .bar i{position:absolute; inset:0 auto 0 0; width:0%; background:var(--accent); transition:width .4s ease}
+  .chip.full .bar i{background:var(--good)}
+  /* ── debrief ─────────────────────── */
+  .grade{font-size:clamp(22px,4.5vw,28px); font-weight:800; letter-spacing:-.02em; margin:4px 0 2px}
+  .grade-sub{color:var(--ink-soft); font-size:14px; margin:0 0 18px}
+  .score-line{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink-soft)}
+  .debrief-bars{display:flex; flex-direction:column; gap:9px; margin:18px 0}
+  .dbar{display:grid; grid-template-columns:150px 1fr 42px; gap:10px; align-items:center; font-size:13px}
+  @media (max-width:520px){ .dbar{grid-template-columns:110px 1fr 42px} }
+  .dbar .track{height:8px; background:var(--gauge); position:relative}
+  .dbar .track i{position:absolute; inset:0 auto 0 0; background:var(--accent)}
+  .dbar.full .track i{background:var(--good)}
+  .dbar .num{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; color:var(--ink-soft)}
+  .anti-cards{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px}
+  .anti-card{border:1px solid var(--trap); color:var(--trap); font-family:var(--mono); font-size:12px; padding:5px 10px}
+  .clean{border:1px solid var(--good); color:var(--good); font-family:var(--mono); font-size:12px; padding:5px 10px}
+  .next-steps{border-top:1px solid var(--line); margin-top:20px; padding-top:14px; font-size:14px}
+  .next-steps li{margin-bottom:6px}
+  /* motion */
+  .scene.enter{animation:enter .24s ease}
+  @keyframes enter{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion: reduce){
+    .scene.enter{animation:none}
+    .chip .bar i{transition:none}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="kicker">FDE Field Simulator · Deployment 01</p>
+    <h1>한빛로지스 파견</h1>
+    <p class="sub">배송 지연률 9%. CEO는 "AI 대시보드"를 원한다. 당신은 FDE다 — 옳은 문제부터 찾아라.</p>
+  </header>
+  <nav class="tracker" id="tracker" aria-label="진행 단계"></nav>
+  <main id="stage" aria-live="polite"></main>
+  <section class="gauge" aria-label="원칙 게이지">
+    <p class="gauge-title">8원칙 게이지 — knowledge/04</p>
+    <div class="chips" id="chips"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // ── 8 principles (knowledge/04) ──
+  const PRINCIPLES = [
+    {id:"P1", name:"사용자가 되어라", max:4},
+    {id:"P2", name:"건물 밖으로", max:1},
+    {id:"P3", name:"중개 계층 제거", max:1},
+    {id:"P4", name:"작동 코드로 반복", max:1},
+    {id:"P5", name:"자갈길 먼저", max:1},
+    {id:"P6", name:"데이터→결정", max:2},
+    {id:"P7", name:"결과에서 역산", max:1},
+    {id:"P8", name:"복리 구조", max:1},
+  ];
+  const STAGE_NAMES = ["브리핑","현장 몰입","Mom Test","5 Whys","리프레이밍","온톨로지","자갈길","디브리핑"];
+
+  const state = { scores:{}, anti:new Set(), spots:0, stageIdx:0 };
+  PRINCIPLES.forEach(p=>state.scores[p.id]=0);
+  function add(pid,n){ state.scores[pid]=Math.min(state.scores[pid]+n, PRINCIPLES.find(p=>p.id===pid).max); renderChips(); }
+
+  // ── scenes ──
+  const SCENES = {
+    brief:{
+      stage:0, tag:"Stage 01 · 브리핑 — 월요일 09:00, 본사 회의실",
+      title:"“AI 지연 예측 대시보드를 만들어 주세요.”",
+      body:[`CEO가 말한다. <span class="quote-inline">“최근 3개월 배송 지연률이 9%까지 올랐습니다. 이사회에서 난리가 났어요. 예산은 충분합니다. AI 대시보드, 가능하죠?”</span>`],
+      choices:[
+        {key:"A", text:"“네. 최신 LLM 기반 예측 대시보드를 바로 설계하겠습니다.”",
+         verdict:"trap", anti:"솔루션 우선",
+         fb:"문제를 이해하기 전에 도구부터 골랐다. CEO는 만족했지만, 당신은 아직 '지연'이 어디서 오는지 모른다 — 요구된 솔루션(대시보드)과 옳은 문제는 별개다.",
+         ref:"안티패턴: 솔루션 우선 — knowledge/02"},
+        {key:"B", text:"“기획팀이 요구사항 문서를 정리해 주시면 검토 후 설계하겠습니다.”",
+         verdict:"trap", anti:"번역 계층",
+         fb:"요구사항 문서는 납작해진 현실이다. 문제 이해자와 해결 구축자 사이에 낀 번역 계층이 곧 impedance mismatch를 만든다.",
+         ref:"원칙 3 '엔지니어가 영업한다' — knowledge/04"},
+        {key:"C", text:"“설계 전에, 먼저 대전 허브 물류센터에서 며칠 지켜보고 싶습니다.”",
+         verdict:"good", gain:[["P2",1],["P3",1]],
+         fb:"“좋은 아이디어는 팔로알토에서 딸기 먹으며 나오지 않는다. 공장 바닥에서 나온다.” — Shyam Sankar. 중개 없이 현장으로 직행했다.",
+         ref:"원칙 2 '맥락이 희소' — knowledge/04 · 겐치겐부츠 — knowledge/05"},
+      ], next:"immerse"
+    },
+    immerse:{
+      stage:1, tag:"Stage 02 · 현장 몰입 — 수요일 06:00, 대전 허브 상차장",
+      title:"어디를 파고들 것인가? (3곳 선택)",
+      body:["지게차 소리, 커피 냄새, 벽에 붙은 KPI 출력물. 시간은 한정돼 있다 — <b>세 곳</b>만 깊게 팔 수 있다."],
+      multi:3,
+      options:[
+        {text:"관제팀장 김부장의 개인 엑셀 파일", hidden:true,
+         reveal:"📌 발견 — 문서 밖 결정: 배차 변경이 ERP가 아니라 이 엑셀에서 결정되고 있었다."},
+        {text:"본사 공식 KPI 대시보드", hidden:false,
+         reveal:"이미 아는 숫자의 재확인. '지연률 9%'라는 증상만 보여줄 뿐, 원인은 없다."},
+        {text:"반품 구역 구석의 파레트 더미", hidden:true,
+         reveal:"📌 발견 — 기록 안 되는 데이터: 지연 반품이 '미처리'로 쌓일 뿐, 지연 사유는 어디에도 기록되지 않는다."},
+        {text:"ERP 사용자 매뉴얼", hidden:false,
+         reveal:"문서화된 프로세스 ≠ 실제 프로세스. 매뉴얼은 아무도 따르지 않는 의례였다."},
+        {text:"베테랑 기사들의 단톡방", hidden:true,
+         reveal:"📌 발견 — 하중 임시방편: 사고·정체 정보가 단톡방에서 실시간 공유되고, 시스템엔 한 줄도 안 들어간다. 이 방이 사실상 관제 시스템이다."},
+        {text:"월간 경영보고서 3개월치", hidden:false,
+         reveal:"납작한 요약. 경영보고서를 읽고 현장을 아는 사람은 없다."},
+      ],
+      confirmLabel:"조사 시작",
+      next:"momtest"
+    },
+    momtest:{
+      stage:2, tag:"Stage 03 · Mom Test — 관제실, 김부장과 단둘이",
+      title:"질문 하나로 신뢰를 얻거나 잃는다.",
+      body:["김부장이 의자를 돌린다. “본사에서 오셨다고요. 뭐가 궁금하신데요?”"],
+      choices:[
+        {key:"A", text:"“AI가 지연을 예측해주면 쓰실 건가요?”",
+         verdict:"trap", anti:"인터뷰 의존",
+         fb:"미래 가정 + 의견 질문. 김부장은 예의상 '네, 좋죠'라고 답할 것이고, 당신은 아무것도 배우지 못한다.",
+         ref:"The Mom Test — knowledge/05"},
+        {key:"B", text:"“어제 지연 건은 어떻게 처리하셨어요?”",
+         verdict:"good", gain:[["P1",1]],
+         fb:"과거의 사실을 물었다. 답: “단톡방 보고 내가 엑셀에서 수동으로 뺐지. 시스템은 몰라요.” — 결정이 시스템 밖에서 일어난다는 결정적 증언.",
+         ref:"Mom Test: 의견이 아니라 과거 행동을 — knowledge/05"},
+        {key:"C", text:"“지연의 가장 큰 원인이 뭐라고 생각하세요?”",
+         verdict:"neutral",
+         fb:"나쁘진 않지만 의견 질문이다. 사람마다 다른 답이 나오고 검증할 수 없다. 사실(행동)을 물었어야 했다.",
+         ref:"The Mom Test — knowledge/05"},
+      ], next:"whys1"
+    },
+    whys1:{
+      stage:3, tag:"Stage 04 · 5 Whys — ① 왜 배송이 늦는가?",
+      title:"표면 증상에서 출발한다: “배송이 늦는다.”",
+      body:["첫 번째 '왜'. 어느 가지를 파고들까?"],
+      choices:[
+        {key:"A", text:"배차 알고리즘이 낡아서 — 더 좋은 ML 모델로 교체하면 된다.",
+         verdict:"trap", anti:"대시보드 함정", to:"whysTrap",
+         fb:"기술 가지로 빠졌다. 나중에 알게 되지만 — 알고리즘은 입력할 지연 신호 자체가 없어서 무력했던 것이다.",
+         ref:"증상 vs 근본 원인 — Rumelt, knowledge/05"},
+        {key:"B", text:"지연 요인이 생겨도 당일 대응이 늦어서.",
+         verdict:"good",
+         fb:"운영의 사슬을 따라간다. 다음 '왜'로.",
+         ref:"5 Whys — knowledge/05"},
+      ], next:"whys2"
+    },
+    whysTrap:{
+      stage:3, tag:"Stage 04 · 5 Whys — 막다른 길",
+      title:"3주 뒤: 새 모델, 같은 지연률.",
+      body:["더 정확한 모델을 붙였지만 지연률은 그대로다. 모델이 문제가 아니었다 — <b>입력할 신호가 애초에 시스템에 없었다.</b> 단톡방과 엑셀에 갇혀 있었으니까.",
+            "당신은 사다리를 다시 오른다."],
+      choices:[
+        {key:"A", text:"처음으로 돌아가 운영의 사슬을 따라간다: 왜 당일 대응이 늦는가?",
+         verdict:"neutral",
+         fb:"비싼 수업료였다. 이번엔 조직의 가지를 판다.",
+         ref:"“작동해야 할 통념을 버리고 실제 작동하는 것을 택하라” — Karp, knowledge/04"},
+      ], next:"whys2"
+    },
+    whys2:{
+      stage:3, tag:"Stage 04 · 5 Whys — ② 왜 당일 대응이 늦는가?",
+      title:"관제팀은 이미 최선을 다하고 있다.",
+      body:["두 번째 '왜'."],
+      choices:[
+        {key:"A", text:"관제 인원이 부족해서 — 증원이 필요하다.",
+         verdict:"neutral",
+         fb:"증원해도 신호가 없으면 대응할 수 없다. 김부장의 말을 기억하라: “시스템은 몰라요.” 더 깊이.",
+         ref:"5 Whys: 멈추기엔 이르다"},
+        {key:"B", text:"지연 신호가 시스템에 없어 단톡방·엑셀에서만 돌기 때문에.",
+         verdict:"good",
+         fb:"몰입에서 발견한 세 가지 숨은 곳이 하나의 선으로 이어진다. 마지막 '왜'로.",
+         ref:"숨은 곳 3가지 — knowledge/02"},
+      ], next:"whys3"
+    },
+    whys3:{
+      stage:3, tag:"Stage 04 · 5 Whys — ③ 왜 신호가 시스템에 없는가?",
+      title:"근본 원인의 문턱이다.",
+      body:["마지막 '왜'. 여기서 무엇을 근본 원인으로 지목하는가가 이후 모든 것을 결정한다."],
+      choices:[
+        {key:"A", text:"기사들이 입력을 게을리해서 — 입력 의무화와 페널티가 필요하다.",
+         verdict:"trap", anti:"비난 프레임",
+         fb:"사람을 탓하는 순간 조사는 끝난다. 사실: 입력할 곳 자체가 없다. 기사들은 오히려 단톡방이라는 자기들만의 시스템을 만들어 회사를 지탱해 왔다.",
+         ref:"하중 임시방편을 벌하지 마라 — knowledge/02"},
+        {key:"B", text:"지연 사유를 기록하고 되먹이는 절차(Action)가 워크플로에 아예 없어서.",
+         verdict:"good", gain:[["P7",1]],
+         fb:"근본 원인 도달: 기술(모델 부재)이 아니라 조직(절차 부재)이다. “우리의 문제는 기술적인 것이 아니다. 조직적인 것이다.” — Alex Karp",
+         ref:"카프의 렌즈 — knowledge/04"},
+      ], next:"reframe"
+    },
+    reframe:{
+      stage:4, tag:"Stage 05 · 리프레이밍 — 문제를 다시 진술하라",
+      title:"CEO가 물었던 문제 vs 당신이 발견한 문제",
+      body:["원래 요청: “AI 지연 예측 대시보드”. 현장에서 본 것을 토대로, 이 파견의 문제 진술을 확정하라."],
+      choices:[
+        {key:"A", text:"“지연을 더 정확히 예측하는 모델을 만든다.”",
+         verdict:"trap", anti:"대시보드 함정",
+         fb:"예측 정확도는 진짜 문제가 아니었다. 관제팀은 이미 꽤 잘 예측한다 — 그 판단이 휘발될 뿐.",
+         ref:"리프레이밍: 더 나은 문제 — knowledge/05"},
+        {key:"B", text:"“현장의 지연 신호를 시스템에 붙잡아, 당일 배차 결정으로 흐르게 한다.”",
+         verdict:"good", gain:[["P6",1]],
+         fb:"문제가 '예측'에서 '신호의 포착과 흐름'으로 바뀌었다. 이 리프레이밍 하나가 이후 온톨로지와 구축의 방향을 전부 결정한다.",
+         ref:"Frame → Reframe → Move Forward — knowledge/05"},
+        {key:"C", text:"“기사 지각·미입력에 페널티를 부여해 데이터 규율을 세운다.”",
+         verdict:"trap", anti:"비난 프레임",
+         fb:"정치적으로 실행 불가능하고, 단톡방(현재 유일한 관제 시스템)의 신뢰를 파괴한다. 좋은 문제의 조건을 전부 위반.",
+         ref:"좋은 문제 = 정치적으로 실행 가능 — knowledge/02"},
+      ], next:"ontology"
+    },
+    ontology:{
+      stage:5, tag:"Stage 06 · 온톨로지 스케치 — 루프를 닫아라",
+      title:"Shipment · DelayEvent · Driver. 그리고 Action 하나.",
+      body:["객체는 잡혔다. 이제 <b>데이터 → 결정 → 행동 → 다시 데이터</b>의 루프를 닫을 Action Type을 골라라."],
+      choices:[
+        {key:"A", text:"refreshDashboard — 지연 현황을 실시간 시각화해 보여준다.",
+         verdict:"trap", anti:"대시보드 함정",
+         fb:"보는 것은 행동이 아니다. 사람이 읽고 → 판단하고 → 수동 재입력하는 끊어진 루프가 그대로 남는다.",
+         ref:"끊어진 루프 — knowledge/03 §2"},
+        {key:"B", text:"recordDelayCause — 기사·관제가 지연 사유를 1탭 기록, Shipment.riskScore가 갱신되고 다음 배차에 반영된다.",
+         verdict:"good", gain:[["P6",1],["P8",1]],
+         fb:"루프가 닫혔다. 오늘의 지연 기록이 내일의 배차를 개선한다 — 쓸수록 나아지는 복리 구조. 이것이 Action이 일급 시민이어야 하는 이유다.",
+         ref:"Kinetic layer · Action — knowledge/03 §3"},
+        {key:"C", text:"exportToExcel — 김부장의 엑셀 워크플로를 존중해 내보내기를 지원한다.",
+         verdict:"trap", anti:"현상 유지",
+         fb:"임시방편을 영구화했다. 신호는 다시 한 사람의 파일 속으로 사라진다.",
+         ref:"하중 임시방편은 단서이지 목적지가 아니다 — knowledge/02"},
+      ], next:"build"
+    },
+    build:{
+      stage:6, tag:"Stage 07 · 자갈길 구축 — 무엇을, 언제 내놓는가",
+      title:"CEO가 다시 묻는다: “그래서 언제 뭘 볼 수 있죠?”",
+      body:["설계는 섰다. 이제 실행 전략이다."],
+      choices:[
+        {key:"A", text:"단톡방 신고를 구조화하는 봇 + 규칙 기반 riskScore. 2주 안에 대전 허브 한 곳에 배포.",
+         verdict:"good", gain:[["P4",1],["P5",1]],
+         fb:"자갈길이다. 기사들이 이미 쓰는 단톡방 위에 얹어 채택 장벽이 없고, 2주 뒤 현실의 반응을 얻는다. 패턴이 반복되면 그때 고속도로를 깐다.",
+         ref:"Gravel road first — knowledge/01 · 원칙 4·5 — knowledge/04"},
+        {key:"B", text:"전사 AI 물류 플랫폼 6개월 로드맵을 수립하고 전 허브 동시 적용을 준비한다.",
+         verdict:"trap", anti:"과잉 일반화",
+         fb:"첫 고객부터 플랫폼을 지으려 한다. 검증 안 된 추상 위에 6개월을 걸었다 — 그동안 지연률은 그대로다.",
+         ref:"안티패턴: 과잉 일반화 — knowledge/02"},
+        {key:"C", text:"3개월간 전 부서 요구사항 정의 워크숍을 돌려 합의된 명세부터 만든다.",
+         verdict:"trap", anti:"인터뷰 의존",
+         fb:"실험 단위는 명세가 아니라 작동하는 코드다. “관심 없으면 안 쓸 것이고, 그럼 즉시 알게 된다.”",
+         ref:"Iterate with live products — knowledge/04 원칙 4"},
+      ], next:"debrief"
+    },
+  };
+
+  // ── render helpers ──
+  const stageEl = document.getElementById("stage");
+  const trackerEl = document.getElementById("tracker");
+  const chipsEl = document.getElementById("chips");
+
+  function renderTracker(){
+    trackerEl.innerHTML = STAGE_NAMES.map((n,i)=>{
+      const cls = i<state.stageIdx ? "done" : (i===state.stageIdx ? "now" : "");
+      return `<span class="${cls}">${String(i+1).padStart(2,"0")} ${n}</span>`;
+    }).join("");
+  }
+  function renderChips(){
+    chipsEl.innerHTML = PRINCIPLES.map(p=>{
+      const v = state.scores[p.id], pct = Math.round(v/p.max*100);
+      return `<div class="chip ${v>=p.max?"full":""}" title="${p.name} ${v}/${p.max}">
+        <span class="cname">${p.id} ${p.name}</span>
+        <span class="bar"><i style="width:${pct}%"></i></span></div>`;
+    }).join("");
+  }
+  function esc(s){return s}
+
+  function showScene(id){
+    const sc = SCENES[id];
+    state.stageIdx = sc.stage; renderTracker();
+    const bodyHtml = sc.body.map(b=>`<p>${b}</p>`).join("");
+    let inner = `<p class="stage-tag">${sc.tag}</p><h2>${sc.title}</h2>${bodyHtml}`;
+    if(sc.multi){
+      inner += `<p class="hint">정확히 ${sc.multi}곳을 고른 뒤 조사를 시작하라.</p><div class="choices" id="opts"></div>
+        <button class="next" id="confirm" disabled>${sc.confirmLabel}</button><div id="fbzone"></div>`;
+      stageEl.innerHTML = `<div class="scene enter">${inner}</div>`;
+      const opts = document.getElementById("opts");
+      const picked = new Set();
+      sc.options.forEach((o,i)=>{
+        const b = document.createElement("button");
+        b.className="choice"; b.innerHTML=`<span class="key">${String.fromCharCode(65+i)}</span>${o.text}`;
+        b.addEventListener("click",()=>{
+          if(picked.has(i)){picked.delete(i); b.classList.remove("selected");}
+          else if(picked.size<sc.multi){picked.add(i); b.classList.add("selected");}
+          document.getElementById("confirm").disabled = picked.size!==sc.multi;
+        });
+        opts.appendChild(b);
+      });
+      document.getElementById("confirm").addEventListener("click",()=>{
+        opts.querySelectorAll("button").forEach(b=>b.disabled=true);
+        document.getElementById("confirm").style.display="none";
+        let found=0, html="";
+        [...picked].sort().forEach(i=>{
+          const o=sc.options[i];
+          if(o.hidden){found++; add("P1",1);}
+          html += `<div class="feedback ${o.hidden?"good":"neutral"}">
+            <span class="verdict">${o.hidden?"숨은 곳 확보":"표면 신호"}</span><p>${o.reveal}</p></div>`;
+        });
+        state.spots = found;
+        html += `<div class="feedback ${found===3?"good":"neutral"}">
+          <span class="verdict">몰입 결과</span>
+          <p>숨은 곳 ${found}/3 발견. ${found===3
+            ? "세 단서가 곧 하나의 근본 원인으로 이어진다."
+            : "놓친 단서는 5 Whys에서 발밑을 어둡게 할 것이다."}</p>
+          <p class="ref">숨은 곳 3가지 — knowledge/02 §1단계</p></div>
+          <button class="next" id="go">계속</button>`;
+        document.getElementById("fbzone").innerHTML = html;
+        document.getElementById("go").addEventListener("click",()=>showScene(sc.next));
+        document.getElementById("go").focus();
+      });
+      return;
+    }
+    inner += `<div class="choices" id="opts"></div><div id="fbzone"></div>`;
+    stageEl.innerHTML = `<div class="scene enter">${inner}</div>`;
+    const opts = document.getElementById("opts");
+    sc.choices.forEach(c=>{
+      const b = document.createElement("button");
+      b.className="choice"; b.innerHTML=`<span class="key">${c.key}</span>${c.text}`;
+      b.addEventListener("click",()=>{
+        opts.querySelectorAll("button").forEach(x=>x.disabled=true);
+        b.classList.add("selected"); b.disabled=false; b.style.cursor="default";
+        if(c.gain) c.gain.forEach(([p,n])=>add(p,n));
+        if(c.anti) state.anti.add(c.anti);
+        const label = c.verdict==="good"?"원칙 확보":(c.verdict==="trap"?"함정 카드 획득":"판정 보류");
+        document.getElementById("fbzone").innerHTML =
+          `<div class="feedback ${c.verdict}"><span class="verdict">${label}${c.anti?` — ${c.anti}`:""}</span>
+           <p>${c.fb}</p><p class="ref">${c.ref}</p></div>
+           <button class="next" id="go">계속</button>`;
+        const nextId = c.to || sc.next;
+        document.getElementById("go").addEventListener("click",()=>{
+          if(nextId==="debrief") showDebrief(); else showScene(nextId);
+        });
+        document.getElementById("go").focus();
+      });
+      opts.appendChild(b);
+    });
+  }
+
+  function showDebrief(){
+    state.stageIdx = 7; renderTracker();
+    const total = PRINCIPLES.reduce((s,p)=>s+state.scores[p.id],0);
+    const max = PRINCIPLES.reduce((s,p)=>s+p.max,0);
+    let grade, gradeSub;
+    if(total>=11){grade="포장 고속도로"; gradeSub="Echo와 Delta를 한 몸에 — 옳은 문제를 옳게 풀었다.";}
+    else if(total>=8){grade="자갈길 완주"; gradeSub="Delta 후보. 방향은 맞았고, 놓친 원칙은 다음 파견에서.";}
+    else if(total>=4){grade="견습 FDE"; gradeSub="현장엔 갔지만 사다리 어딘가에서 미끄러졌다. 함정 카드를 복기하라.";}
+    else {grade="컨설턴트"; gradeSub="고객은 편안했고, 문제는 그대로다. 다시 현장으로.";}
+    const bars = PRINCIPLES.map(p=>{
+      const v=state.scores[p.id];
+      return `<div class="dbar ${v>=p.max?"full":""}">
+        <span>${p.id} ${p.name}</span>
+        <span class="track"><i style="width:${Math.round(v/p.max*100)}%"></i></span>
+        <span class="num">${v}/${p.max}</span></div>`;
+    }).join("");
+    const anti = state.anti.size
+      ? `<div class="anti-cards">${[...state.anti].map(a=>`<span class="anti-card">⚠ ${a}</span>`).join("")}</div>`
+      : `<div class="anti-cards"><span class="clean">함정 카드 0 — 무결 파견</span></div>`;
+    stageEl.innerHTML = `<div class="scene enter">
+      <p class="stage-tag">Stage 08 · 디브리핑 — 파견 종료 보고</p>
+      <p class="grade">${grade}</p>
+      <p class="grade-sub">${gradeSub}</p>
+      <p class="score-line">총점 ${total}/${max} · 숨은 곳 ${state.spots}/3 · 함정 카드 ${state.anti.size}장</p>
+      <div class="debrief-bars">${bars}</div>
+      ${anti}
+      <div class="next-steps">
+        <b>복기 지도</b>
+        <ul>
+          <li>걸려든 함정 → <code>knowledge/02</code> 안티패턴 표</li>
+          <li>8원칙의 근거와 1차 인용 → <code>knowledge/04</code></li>
+          <li>5 Whys·리프레이밍·Mom Test의 계보 → <code>knowledge/05</code></li>
+          <li>이제 진짜 파견을: <code>practice/case-template.md</code>로 당신의 케이스를 시작하라.</li>
+        </ul>
+      </div>
+      <button class="next" id="replay">다시 파견 나가기</button>
+    </div>`;
+    document.getElementById("replay").addEventListener("click",()=>{
+      PRINCIPLES.forEach(p=>state.scores[p.id]=0);
+      state.anti.clear(); state.spots=0; renderChips(); showScene("brief");
+    });
+  }
+
+  renderTracker(); renderChips(); showScene("brief");
+})();
+</script>

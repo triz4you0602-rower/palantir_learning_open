@@ -1,0 +1,37 @@
+Copyright (c) 2026 triz4you0602-rower
+
+이 저장소는 두 가지 라이선스로 배포됩니다 (This repository is dual-licensed):
+
+- 문서/텍스트 (knowledge/, practice/의 .md, README 등):
+  Creative Commons Attribution 4.0 International (CC BY 4.0)
+  https://creativecommons.org/licenses/by/4.0/
+
+- 코드 (practice/game/의 .html 등 소스):
+  MIT License (아래)
+
+------------------------------------------------------------
+MIT License (코드에 적용)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------------------------------------------------------
+NOTICE: "Palantir", "Foundry", "Gotham", "AIP" 및 관련 명칭은 Palantir
+Technologies Inc.의 상표이며, 본 프로젝트는 해당사와 제휴·후원 관계가 없습니다.
+This is an unofficial, educational project not affiliated with or endorsed by
+Palantir Technologies Inc.
