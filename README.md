@@ -6,7 +6,7 @@
 
 > 목적: 정보를 모으는 것을 넘어, FDE의 사고방식을 **실습으로 몸에 익히는 것.**
 >
-> 🎯 **게임으로 바로 시작:** [practice/game/index.html](practice/game/index.html) (게임 허브 — 7개 게임 + RPG)
+> 🎯 **게임으로 바로 시작 (GitHub Pages):** https://triz4you0602-rower.github.io/palantir_learning_open/practice/game/index.html — 게임 허브(7종 + RPG). *리포지토리 Settings → Pages를 활성화(Source: `main`, `/root`)하면 링크가 작동합니다.* 로컬에서는 `practice/game/index.html`을 브라우저로 열어도 됩니다(모든 게임 자기완결적 HTML).
 
 ## 구조
 
