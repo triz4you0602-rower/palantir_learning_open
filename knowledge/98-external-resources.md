@@ -55,11 +55,13 @@
 
 ## 서적 (Books)
 
-### 팔란티어 Day-1 신입 독서 목록 (공식 온보딩 — 다수 보도, 2차이나 신뢰도 높음)
-> 인사이트: 5권 중 **기술서 0권.** 전부 사람·발굴·사회적 기술 → "FDE 역량 = 도구가 아니라 인간·문제 다루기"를 커리큘럼으로 선언.
+### 팔란티어 신입 독서 목록 (2015년경 관행 — 1차급 = 재직자 회고. 통칭 "Day-1 목록")
+> ⚠️ **정정(2026-08-18):** 이전 제목의 "**공식 온보딩 — 다수 보도**"는 **틀렸다.** ① "Day 1에 5권"은 소셜 요약(2차)이 만든 판본 — 1차급 출처(8년 재직자 Nabeel Qureshi 회고, 2024-10-15)는 **책 4권 발송 + *Principles* 는 출간 전 PDF**, 표현도 "입사 시(when you joined)"다. ② "다수 보도"는 착시 — 널리 인용되는 X 게시물은 그 에세이의 **이틀 후(2024-10-17) 재요약**으로, 단일 출처의 반향이다. ③ **팔란티어 공식 문서에 이 목록은 없다**(채용 페이지 렌더 확인). ④ 목록은 **2015년경 관행**이며 현재 유효 근거 없음. 상세 검증표·의도 재구성 → **[09](09-onboarding-reading-intent.md)**.
+>
+> 인사이트: **기술서 0권.** 전부 사람·발굴·사회적 기술 → "FDE 역량 = 도구가 아니라 인간·문제 다루기"를 커리큘럼으로 선언. (가설 H5 — 근거·반증은 [09](09-onboarding-reading-intent.md))
 - 📖 **Keith Johnstone, *Impro*** — 즉흥극·**지위(status) 읽기**·"yes-and". 방을 읽고 신뢰 쌓기. (→ [05 발굴 인터뷰](05-problem-discovery-canon.md), [04](04-problem-solving-principles.md))
 - 📖 **Steve Portigal, *Interviewing Users*** — **사용자 인터뷰·발굴 방법**의 표준서. (→ [05](05-problem-discovery-canon.md))
-- 📖 **Ray Dalio, *Principles*** — 급진적 투명성·**아부 없는 피드백**·결정. (→ FDE-CONSULTANT "비위 맞추지 마라")
+- 📖 **Ray Dalio, *Principles*** — 1차 문구: **"믿음성 가중(believability-weighted) 아이디어 능력주의"** · **"고통 + 성찰 = 진보"** · 급진적 개방성·투명성. (우리 쪽 응용 = "아부 없는 피드백" → FDE-CONSULTANT "비위 맞추지 마라". 축자 확인: [09 §2](09-onboarding-reading-intent.md))
 - 📖 **Lawrence Wright, *The Looming Tower*** — 미션·도메인 몰입(대테러 기원, 회사 신화).
 - 📖 **David Allen, *Getting Things Done*** — 실행·개인 운영.
 

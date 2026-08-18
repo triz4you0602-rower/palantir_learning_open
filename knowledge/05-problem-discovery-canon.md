@@ -35,16 +35,21 @@
 - **Christensen & Moesta, Jobs to Be Done (JTBD)** — "무엇을 사는가"가 아니라 **"어떤 일(job)을 시키려 고용하는가"**, 그리고 그 결정을 밀고/당기는 **상황(circumstances)** 을 발굴.
 
 ### 축 2b — 현장 인터뷰 기술 (Field Interview Craft)
-> 팔란티어가 신입에게 **첫날** 주는 책 두 권이 정확히 이 층이다(Impro·Interviewing Users). "건물 밖으로"는 *가라*는 명령일 뿐, *가서 어떻게 캐내나*는 별도 기술이다.
+> 팔란티어가 신입에게 주는 책 중 두 권이 정확히 이 층이다(Impro·Interviewing Users). "건물 밖으로"는 *가라*는 명령일 뿐, *가서 어떻게 캐내나*는 별도 기술이다. → 목록의 출처 검증과 의도 재구성은 [09](09-onboarding-reading-intent.md).
+
+> 🔍 **1차 대조 실시(2026-08-18).** 아래 6항목은 원래 2차 요약 수준이었다. 저자 본인 자료·공개 샘플 챕터·서지 정보로 대조해 **항목마다 판정을 붙였다.** ✅=1차 근거 확인 · ⚠️=부분/미대조. 판정 근거는 이 문서 하단 출처. 같은 기준의 상세 검증은 [09](09-onboarding-reading-intent.md).
 
 - **Steve Portigal, *Interviewing Users*** — 인터뷰 실전:
-  - **말하게 하고 침묵을 견뎌라** — 내가 채우지 말고 상대가 채우게(어색한 3초 뒤 진짜가 나온다).
-  - **"그때 얘기 좀 해주세요"** — 일반론이 아니라 *구체적 과거 일화*를 요청(Mom Test와 짝).
-  - **가정을 유보하고 "왜 그렇게 하세요?"** — 바보 같아 보여도 물어라(전문가일수록 암묵지가 안 나옴).
+  - ✅⚠️ **말하게 하고 침묵을 견뎌라** — 내가 채우지 말고 상대가 채우게. *저자 본인이 "침묵의 힘(The Power of Silence)"을 별도 강연 주제로 올려둔 것은 확인(저자 사이트). 요지("두려움에 답을 미리 제시하지 말고 질문을 던진 뒤 그대로 두라")는 **저자 인터뷰 기사(2차)** 근거이며 **강연 내용·원서 문면은 미확인**. 즉 주제 존재는 1차, 구체 지침은 2차.* ⚠️ "3초"는 우리가 붙인 숫자다.
+  - ✅ **"그때 얘기 좀 해주세요"** — 일반론이 아니라 *구체적 과거 일화*를 요청(Mom Test와 짝). *저자 사이트 축자: "무슨 영화를 스트리밍하세요?"보다 **"가장 최근에 스트리밍한 영화는?"** — **구체적인 것이 일반적인 것보다 답하기 쉽고, 후속 질문의 발판이 된다.** 순서·수량·전체 목록을 묻는 변형도 함께 제시된다.*
+  - ⚠️ **가정을 유보하고 "왜 그렇게 하세요?"** — 바보 같아 보여도 물어라(전문가일수록 암묵지가 안 나옴). *샘플 1장에 "사람들은 왜 그렇게 하는지 즉답을 못 하니 **후속 질문으로 캐고 추론해 왜를 들어야 한다**"는 서술은 확인. 단 "가정 유보"는 편향 사전 점검(연구 전 가정 명시)에 관한 **2차 인터뷰 기사** 근거 — 원서 본문 대조는 미실시.*
 - **Keith Johnstone, *Impro* — 지위(status) 읽기** — 발굴은 사회적 행위다:
-  - 방의 **지위 역학**을 읽어라 — 누가 눈치 보나, 누가 진짜 결정하나(문서 밖 결정의 단서).
-  - **"yes-and"** — 상대 말을 부정·교정하지 말고 이어받아 더 끌어내라(방어를 열어야 진실이 나옴).
-  - 스스로 **낮은 지위(low-status)** 를 취하면(모르는 척, 배우러 온 자세) 사람들이 더 많이 가르쳐 준다 — FDE의 "고통을 먹는" 겸손과 통함.
+  - ✅/⚠️ **방의 지위 역학을 읽어라** — 누가 눈치 보나, 누가 진짜 결정하나(문서 밖 결정의 단서).
+    - ✅ **책이 지위를 한 축으로 다룬다**: *Impro*(Faber and Faber, 1979)는 네 부로 구성되며 **첫 부 제목이 "Status"**("Spontaneity"·"Narrative Skills"·"Masks and Trance"와 함께). 서지 구조로 확인.
+    - ⚠️ **"지위 게임은 모든 상호작용에 스며 있다"** 는 명제는 **2차 해설** 근거(원서 문면 미대조).
+    - ⚠️ **"현장 인터뷰에서 방의 지위를 읽어라"는 응용은 우리 것**이다. 저자의 원 문맥은 연기·즉흥 훈련이며, 발굴 기법으로의 전용은 이 저장소(및 재직자 회고)의 해석이다. → 섹션 제목의 존재가 응용 처방까지 정당화하지는 않는다.
+  - ⚠️ **"yes-and"** — 상대 말을 부정·교정하지 말고 이어받아 더 끌어내라(방어를 열어야 진실이 나옴). *즉흥극 통설 및 저자의 격언("중요한 건 제안이 아니라 그 제안으로 무엇을 하는가")과 정합하나, **"yes-and"라는 문구 자체의 원문 대조는 미실시.***
+  - ⚠️ 스스로 **낮은 지위(low-status)** 를 취하면(모르는 척, 배우러 온 자세) 사람들이 더 많이 가르쳐 준다 — FDE의 "고통을 먹는" 겸손과 통함. *"Status" 부의 존재는 확인되나, **"발굴을 위해 스스로 낮은 지위를 취하라"는 처방은 재직자·2차 해설의 응용**이다. 저자의 원래 문맥은 연기 훈련.*
 
 > **현장 인터뷰 미니 체크리스트** (섀도잉·인터뷰 전 3초 점검): ⑴ 의견 말고 과거 행동을 묻나(Mom Test) ⑵ 침묵을 견디나(Portigal) ⑶ 방의 지위를 읽고 low-status로 여나(Impro) ⑷ "왜?"로 암묵지를 캐나(5 Whys). → [FDE-CONSULTANT §3 Step A·B](../FDE-CONSULTANT.md) 현장 파견에 직접 사용.
 
@@ -88,6 +93,11 @@
 - Steve Blank, Customer Development: https://steveblank.com/tag/customer-development/
 - Christensen Institute, Jobs to Be Done: https://www.christenseninstitute.org/theory/jobs-to-be-done/
 - The Mom Test (개요): https://cardboardit.com/2023/08/the-ultimate-guide-to-customer-discovery-lessons-from-airbnb-steve-blank-and-the-mom-test/
-- Steve Portigal, *Interviewing Users* (팔란티어 Day-1 목록) · Keith Johnstone, *Impro* (팔란티어 Day-1 목록) — 서적 등급은 [98](98-external-resources.md)
+§축 2b 6항목의 1차 대조 근거 (2026-08-18 확인):
+- Steve Portigal 본인 사이트 — 질문 기법(구체적 사례·순서·수량·전체 목록) 축자 및 "침묵의 힘" 강연 자료: https://portigal.com/category/interviewing-users/
+- *Interviewing Users* 2판 공개 샘플 챕터(1장) — "왜인지 즉답이 없으니 후속 질문으로 캐라": https://rosenfeldmedia.com/interviewing-users-second-edition-sample-chapter/ · 출판사 소개: https://rosenfeldmedia.com/books/interviewing-users-second-edition/
+- *Impro* 서지·구성(1979, Faber and Faber, 4부 중 1부가 "Status"): https://en.wikipedia.org/wiki/Impro · 저자 교육 철학: https://en.wikipedia.org/wiki/Keith_Johnstone
+- ⚠️ **미대조로 남은 것:** "yes-and" 문구 · "낮은 지위를 취하라"는 발굴용 처방 · "가정 유보"의 원서 문면. → 원서 본문 확보 시 승격 대상.
+- 두 책 모두 팔란티어 신입 배포 목록 — 목록 자체의 출처 검증·의도 재구성은 [09](09-onboarding-reading-intent.md), 서적 등급은 [98](98-external-resources.md)
 
 참고: "정전 ↔ 팔란티어 ↔ 카프" 매칭은 이 저장소의 종합 해석. 카프 발언 출처는 [04 출처](04-problem-solving-principles.md) 참조.
