@@ -175,7 +175,23 @@ LLM은 추론·자연어에 강하지만 직접 다음을 못 한다: 실제 시
 "AI 안전 = Branch Proposal + 사람 리뷰"는 **온톨로지를 편집하는 AI FDE**의 강한 거버넌스다. 모든 AI 에이전트가 그런 건 아니다:
 - **기본 AIP Chatbot(구 Agent):** 공식 Getting-Started의 안전 방식은 주로 **프롬프트 거버넌스** — 시스템 프롬프트로 업무 로직·도구 사용 맥락을 서술. 권한 계층·사람 리뷰·브랜칭은 입문 단계에서 강조되지 않음(고급/별개). → *소프트*.
 - **온톨로지 편집 AI FDE:** Branch Proposal → 사람 리뷰 → 병합. → *하드*.
+- **외부 에이전트(Ontology MCP, 아래):** 애플리케이션 제한(application restrictions)으로 **허용된 행동 집합 자체를 사전에 좁히는** 방식 — 사후 리뷰가 아니라 사전 권한 스코핑. → *제3의 유형(스코프형)*.
 - 교훈: "AI가 온톨로지 위에 있으니 안전하다"는 자동이 아니다. **어떤 종류의 거버넌스가 걸렸는지**를 확인해야 한다. 가장 강한 보증은 프롬프트 설득으로 못 뚫는 **결정론적 집행 계층**(판단 LLM과 집행을 분리)이다. (출처: [AIP Chatbot Getting-Started](https://www.palantir.com/docs/foundry/agent-studio/getting-started), 2026 접속)
+
+### Ontology MCP / Palantir MCP — 외부 에이전트에게 온톨로지 개방 (2026)
+팔란티어 내부 AI(AI FDE·AIP Chatbot)뿐 아니라 **외부 임의 에이전트**에게도 온톨로지를 [MCP](https://modelcontextprotocol.io/)(Model Context Protocol, 개방 표준) 서버로 노출한다. 두 제품으로 나뉜다:
+
+| | **Ontology MCP (OMCP)** | **Palantir MCP (PMCP)** |
+|---|---|---|
+| 대상 | 온톨로지 **소비자**(외부 에이전트) | 온톨로지 **빌더**(개발자) |
+| 할 수 있는 것 | 통제된 **데이터 쓰기** — object 읽기(SQL 도구화), 사전정의된 action 실행, query function 호출 | **구조 수정** — object/link/action **타입** 생성·변경 (70개 이상 도구) |
+| 할 수 없는 것 | 온톨로지 타입 구조 변경 | 실제 온톨로지 데이터 쓰기 |
+| 거버넌스 | 애플리케이션 제한으로 허용 행동 범위를 좁힘 | 개발 워크플로 범위 내 |
+
+- **에이전트를 도구로 합성:** AIP Logic·AIP chatbot으로 만든 에이전틱 로직을 함수로 저장해 MCP 도구로 노출 가능 — 호출하는 상위 에이전트 입장에선 하위 에이전트가 그냥 "도구 하나"가 되어, 이미 만든 에이전트 위에 상위 에이전트를 쌓을 수 있다.
+- **노코드 연결 사례(공식 예시 아키텍처):** Microsoft Copilot Studio, **Claude Cowork**, Google Gemini Enterprise가 커스텀 코드 없이 OMCP로 온톨로지에 직접 연결. (프로코드 예시로는 LangChain 기반 에이전트가 Azure/GCP에서 OMCP·PMCP 서버에 연결하는 구성도 제시됨.)
+- **공식 경고:** 팔란티어 AIP 밖에 호스팅된 LLM에 OMCP를 연결하면 조직 데이터가 외부 MCP 클라이언트에 노출된다 — 조직의 데이터 거버넌스·컴플라이언스 정책과의 합치 확인이 필요하다고 명시.
+- 시사점: 온톨로지의 "안전한 행동 범위 제한"(§7 서두)이라는 원칙이 **내부 AI를 넘어 임의의 외부 에이전트 생태계**로 확장됐다 — 거버넌스 설계의 무게중심이 "누가 온톨로지를 편집하는가"에서 "어떤 외부 클라이언트에 어떤 스코프로 노출했는가"로 넓어진다.
 
 ## 8. 기억할 프레이밍 (Memorable Framings)
 
@@ -208,6 +224,7 @@ LLM은 추론·자연어에 강하지만 직접 다음을 못 한다: 실제 시
 | Function은 읽기 전용 | ❌ 정정 | Function은 **ontology edits로 상태 변경 가능** + function-backed action 백엔드 |
 | "함수가 읽기전용이라 AI 안전" | ❌ 정정 | 안전 근거는 **정의된 Action 범위 + Branch Proposal 리뷰**(§5) |
 | 온톨로지 = 3계층(semantic/kinetic/**dynamic**) | ⚠️ 정정 | 공식은 **2그룹**(semantic elements / kinetic elements). "dynamic security"는 **kinetic의 하위 요소**이지 독립 3층 아님. 3계층은 2차 해설의 재슬라이싱. 근거: 공식 Ontology Overview "kinetic elements (actions, functions, dynamic security)" |
+| Ontology MCP 지원 클라이언트: "Claude.ai, Microsoft Copilot Studio, Gemini Enterprise" | ❌ 정정 | **1차 문서(`ontology-mcp/sample-architecture`) 직접 대조 결과 "Claude.ai"가 아니라 "Claude Cowork"** — 검색엔진 요약(2차 가공)이 더 친숙한 제품명으로 바꿔치기한 오류. 정확한 3사는 Microsoft Copilot Studio·**Claude Cowork**·Google Gemini Enterprise |
 
 교훈(방법론): 대중적 요약(오픈소스 책·블로그)은 큰 그림엔 유용하나, **기술 스펙은 1차 문서로 검증**해야 한다. 이는 FDE의 "그라운드 트루스" 원칙과 같다 → [02-problem-solving-playbook.md](02-problem-solving-playbook.md).
 
@@ -226,3 +243,6 @@ LLM은 추론·자연어에 강하지만 직접 다음을 못 한다: 실제 시
 - "Action types • Overview" / "Action log": https://www.palantir.com/docs/foundry/action-types/overview · https://www.palantir.com/docs/foundry/action-types/action-log
 - "Functions on objects and links": https://www.palantir.com/docs/foundry/functions/api-objects-links
 - "Edit history": https://www.palantir.com/docs/foundry/object-edits/user-edit-history/
+- "Ontology MCP • Overview": https://www.palantir.com/docs/foundry/ontology-mcp/overview
+- "Ontology MCP • Sample architecture": https://www.palantir.com/docs/foundry/ontology-mcp/sample-architecture
+- "Palantir MCP • Overview": https://www.palantir.com/docs/foundry/palantir-mcp/overview
