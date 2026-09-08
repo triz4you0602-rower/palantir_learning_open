@@ -50,12 +50,27 @@
 - **결과(보고):** 일 약 **$40k**(연 ~$14M) 절감 — *네트워크 일부*만 배포한 값.
 - 원칙: last-mile / 자갈길([01](01-fde-model.md)).
 
+### 7. Jacobs — Agua Nueva 수처리장 블로워 최적화 (산업 운영)
+- **표면 요구:** "수처리장 디지털 트랜스포메이션 / 예측 운영."
+- **진짜 문제:** 이미 최적화된 공장에서도, 오퍼레이터가 노이즈 많은 SCADA 정보과부하 속에서 감(gut)에 의존해 판단 — 전력의 대부분을 먹는 **블로워 하나**의 설정을 실시간 최적화할 경로가 없음.
+- **해결:** 센서·랩·CMMS·재무 데이터를 온톨로지로 통합 → 암모니아 예측 모델 → 오퍼레이터의 **기존 플래닝 미팅 시각**에 맞춘 이메일 추천 → 오퍼레이터가 승인/거부(피드백) → 결정이 모델에 되먹임.
+- **결과(보고, 원문이 "notional" 명시):** 플랜트 전체 전력 **~20% 절감**(단, 원문이 함께 제시한 "~2,000→~1,500 kWh/백만갤런"은 계산상 25% 절감이라 **원문 내부에서 수치가 서로 안 맞음** — 벤더 보고 수치는 이런 내부 불일치도 있을 수 있다는 경계 사례), 운영 벌금 제거, 온실가스 감소.
+- 원칙: 대시보드가 아니라 기존 워크플로 리듬(미팅)에 끼워 넣기([02](02-problem-solving-playbook.md) 대시보드 함정 회피) + 결정→행동 루프 닫기([03 §2](03-ontology.md)). 전체 상세: [practice/case-03-jacobs-blower-optimization](../practice/case-03-jacobs-blower-optimization/README.md).
+
+### 8. World Food Programme — DOTS 공급망 (인도적 지원)
+- **표면 요구:** "공급망 가시성 플랫폼."
+- **진짜 문제:** 현장 요원이 물류 문제를 풀어도 그 판단이 기록되지 않아 다음 결정에 재사용되지 않음 — 경험이 휘발됨.
+- **해결:** DOTS에 "결정 되쓰기(write-back)" — 현장 요원이 물류 문제를 풀 때마다 그 결정이 공통 데이터 자산에 기록되어 향후 물류 최적화에 반영. 코로나 시기엔 기존 **Control Tower 모듈**을 재사용해 173개국·72개 기관 대응.
+- **결과(보고):** 코로나 대응 물류로 **$30M 절감**. (별개로 WFP는 2021 INFORMS Edelman Award도 수상 — 단, 원문은 이 상을 "비상 식량 지원에 분석·데이터를 활용한 공로" 전반으로 서술하며 코로나 대응 실적에 국한해 수여했다고는 명시하지 않는다.)
+- 원칙: "행동→데이터" 방향의 되먹임([03 §2](03-ontology.md)의 루프를 완성) + 기존 모듈을 새 위기에 재배치하는 자갈길 재사용([01](01-fde-model.md)).
+
 ## 패턴 추출 (이 사례들에서 반복되는 것)
 
 1. **표면 요구는 거의 항상 "도구"(AI·대시보드·최적화)로 표현된다.** 진짜 문제는 그 아래 *가시성·통합·결정 실행*에 있다.
 2. **대시보드/분석은 목적이 아니다.** 결정과 행동으로 이어질 때만 값이 난다 (5번이 교과서).
 3. **속도가 해자다.** 온톨로지가 현실을 미리 매핑하면 다음 문제가 극적으로 빨라진다 (3번 Trinity 8시간, [복리 게임](../practice/game/fde-campaign.html)).
-4. **같은 수가 산업을 관통한다** — 항공·모터스포츠·철도·보험·리테일·소비재. 이것이 "자갈길→고속도로"가 회사 전체 전략인 이유.
+4. **같은 수가 산업을 관통한다** — 항공·모터스포츠·철도·보험·리테일·소비재·수처리·인도적 지원. 이것이 "자갈길→고속도로"가 회사 전체 전략인 이유.
+5. **결정을 시스템에 "되쓰는" Action이 없으면 암묵지가 휘발된다** (7·8번, [03 §2](03-ontology.md)) — 예측 모델 도입보다 이 되먹임 경로 설계가 더 중요한 경우가 많다.
 
 ## 출처 (Sources)
 
@@ -65,6 +80,8 @@
 - Unit8, "Palantir Foundry Case Studies" (retail 컨트롤 타워 등): https://unit8.com/resources/palantir-foundry-case-studies-by-unit8/
 - foundercoho, "How Ontology Became a Moat" — Trinity $30M/8시간
 - 각종 요약(General Mills $40k/day, SOMPO $60M/3yr) — 2차 요약, 원 보고 대조 시 정밀화 대상
+- Palantir Impact Study — Jacobs (직접 확인, "notional" 데이터 명시): https://www.palantir.com/impact/jacobs/
+- Palantir Impact Study — World Food Programme (직접 확인): https://www.palantir.com/impact/world-food-programme/
 
 방법론(1차 공식):
 - "Delivering a use case," Palantir Docs — "결정/워크플로에서 출발" 원칙: https://www.palantir.com/docs/foundry/getting-started/delivering-a-use-case
