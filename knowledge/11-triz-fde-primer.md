@@ -198,7 +198,7 @@ flowchart TD
 
 ## 더 읽기
 
-- **검증·출처·반론이 필요하면** → [10 · TRIZ vs FDE 구조 비교](10-triz-vs-fde.md) (9회 적대적 검증 기록 포함)
+- **검증·출처·반론이 필요하면** → [10 · TRIZ vs FDE 구조 비교](10-triz-vs-fde.md) (10회 적대적 검증 기록 포함)
 - **팔란티어 방법론 본체** → [02 플레이북](02-problem-solving-playbook.md) · [04 8원칙](04-problem-solving-principles.md) · [03 온톨로지](03-ontology.md)
 - **문제 발굴의 계보 전체** → [05 문제 발굴 정전](05-problem-discovery-canon.md)
 - **용어 확인** → [99 용어집](99-glossary.md)
