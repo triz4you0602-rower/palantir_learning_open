@@ -53,6 +53,21 @@
 
 > **현장 인터뷰 미니 체크리스트** (섀도잉·인터뷰 전 3초 점검): ⑴ 의견 말고 과거 행동을 묻나(Mom Test) ⑵ 침묵을 견디나(Portigal) ⑶ 방의 지위를 읽고 low-status로 여나(Impro) ⑷ "왜?"로 암묵지를 캐나(5 Whys). → [FDE-CONSULTANT §3 Step A·B](../FDE-CONSULTANT.md) 현장 파견에 직접 사용.
 
+## 축 3 — 시스템 안에서 근본 원인을 파고, 모순으로 정식화하라 (Formalize as contradiction)
+
+> 🔴 **개정 (2026-09-08, 적대적 검증):** 이 절의 초판은 *"TRIZ는 문제 발굴에 침묵한다"* 고 썼다. **오류였다.** MATRIZ 공식 문서에 **문제 식별 도구상자**가 별도로 존재하며, 그 목적은 축자로 *"옳은(right) 문제를 식별… 증상이 아니라 근본 원인… 처음엔 명백하지 않은 깊고 숨겨진 이슈"* 다. 정정 경위는 [10 적대적 검증 기록](10-triz-vs-fde.md) F1.
+
+- **알트슐러(G. Altshuller), TRIZ (Теория решения изобретательских задач, 1946~)** ⭐
+  - **문제 식별 (축 1·2와 겹치는 층):** 기능-원가 분석 · 흐름 분석 · **CECA(인과사슬 분석)** · 트리밍 · 특징 전이 · S-커브 · TESE. CECA는 초기 결점에서 **핵심 결점**까지 인과 사슬을 세운다 — 토요타 5 Whys·룸멜트의 **진단**과 같은 자리다.
+  - **정식화 (이 축의 고유 기여):** 문제를 **모순(contradiction)** 으로 형식화한다. **기술적 모순** = "A를 개선하면 B가 악화된다". **물리적 모순** = 하나의 파라미터에 상반된 두 요구가 동시에 정당하게 걸린다. 해소는 **분리 5종** — 공간·시간·관계(조건)·방향·**시스템 수준**.
+  - **이상해결책(IFR)** — *"최소한의 변경만으로, 어떤 시스템 파라미터의 악화도 없이 문제가 완전히 제거되는 최선의 해에 대한 모델"* (MATRIZ 용어집 축자). 지금 가능한 것이 아니라 **최종 상태에서 역산**한다.
+  - **심리적 관성(psychological inertia)** 의 우회가 목적 — 브레인스토밍식 확률적 발상에 대한 명시적 반동. 축 1·2와 **같은 적**을 겨눈다.
+  - **되먹임까지 있다.** ARIZ **Part 8**은 해에서 *"일반 해결 원리를 정식화하라"* 하고, **Part 9.2**는 *"지식베이스에 없는 원리는 문서화해 개정에 포함되도록"* 지시한다 — 팔란티어의 **자갈길 → 패턴 추출 → 고속도로**와 같은 구조다. 개정 규칙(*"최소 20~25개 문제로 검증"*)은 이 저장소의 **n≥2 승격 규칙**과 같은 종류다.
+  - **정치도 전통 안에 있다** — 단, 분리돼 있다. 알트슐러·베르트킨의 **ТРТЛ/ЖСТЛ**(창의적 인격의 생애 전략)은 발명가와 **외부 상황**의 대립을 88단계 "체스 게임"으로 모델링한다. 그러나 ARIZ 절차 안에는 그 단계가 없고, ARIZ가 조직을 언급하는 곳은 **7.4 「이차 문제」**(*"조직적 난관의 극복"* 을 적어두라)뿐이다. **FDE는 이 둘을 하나의 워크플로에 넣었다** — 거기가 Echo의 자리다.
+  - → **처음이라면 [11 · 쉬운 입문](11-triz-fde-primer.md)**, 상세 비교·검증 기록은 **[10-triz-vs-fde.md](10-triz-vs-fde.md)**.
+
+> **한 줄 대비:** 축 1·2와 축 3은 *"옳은 문제는 숨은 근본 원인이다"* 라는 **같은 명제**를 공유하고, 패턴 되먹임 구조까지 같다. 갈리는 것은 **제약을 대하는 태도**다 — TRIZ는 트레이드오프를 *거부*하고(모순을 깨뜨린다), FDE는 실제 제약으로 *수용*한다(제약을 설계 변수로 삼는다).
+
 ## 수렴: 보편 정전 ↔ 팔란티어 ↔ 알렉스 카프 (마스터 매칭표)
 
 | 보편 정전 | 팔란티어 원칙 ([04](04-problem-solving-principles.md)) | 알렉스 카프 발언 |
@@ -65,6 +80,8 @@
 | Blank "iterate with live products" | 원칙 4 (작동 코드로 반복) | "작동해야 할 통념을 끊임없이 버려라" |
 | (조직 이론) 분산 조율 | 낮은 자아·주도성, 4~5인 자율팀 | "스타트업은 **꿀벌 떼(honeybee swarm)** 가 되어야" |
 | Luhmann: 체계마다 관찰 코드가 다름 → 사일로 | **Ontology** = 의미 계층 ([03](03-ontology.md)) | 온톨로지 = 체계 간 **구조적 결합(structural coupling)** |
+| TRIZ 문제 식별: *"옳은 문제 = 증상 아닌 근본 원인 = 숨겨진 이슈"* ([10](10-triz-vs-fde.md)) | 원칙 5 · **숨은 곳 3가지** ([02](02-problem-solving-playbook.md)) — 어휘 수준의 수렴 | "문제는 기술이 아니라 조직적" |
+| TRIZ 정식화: 모순 · IFR에서 역산 ([10](10-triz-vs-fde.md)) | 원칙 7 (결과 역산) · Impedance Mismatch = 일반(제품) vs 특수(현장)의 모순 *(가설)* | "작동해야 할 통념을 끊임없이 버려라" (= 심리적 관성 배격) |
 
 ## 팔란티어가 정전을 넘어서는 지점
 
@@ -99,5 +116,12 @@
 - *Impro* 서지·구성(1979, Faber and Faber, 4부 중 1부가 "Status"): https://en.wikipedia.org/wiki/Impro · 저자 교육 철학: https://en.wikipedia.org/wiki/Keith_Johnstone
 - ⚠️ **미대조로 남은 것:** "yes-and" 문구 · "낮은 지위를 취하라"는 발굴용 처방 · "가정 유보"의 원서 문면. → 원서 본문 확보 시 승격 대상.
 - 두 책 모두 팔란티어 신입 배포 목록 — 목록 자체의 출처 검증·의도 재구성은 [09](09-onboarding-reading-intent.md), 서적 등급은 [98](98-external-resources.md)
+
+§축 3 (TRIZ) 근거 — 기관 준1차 (MATRIZ = 원저가 아니라 특정 학파의 정본 해석):
+- **문제 식별 도구상자** (초판 오류 F1의 정정 근거): https://wiki.matriz.org/docs/triz/problem-solving-tools-5807/
+- **분리 원리 5종**: https://wiki.matriz.org/knowledge-base/triz/problem-solving-tools-5890/contradictions/physical-contradiction-6056/algorithm-for-resolving-physical-contradictions/
+- MATRIZ TRIZ Knowledge Base: https://wiki.matriz.org/knowledge-base/triz/ (용어집: https://wiki.matriz.org/knowledge-base/triz/glossary-6146/ · 물리적 모순: https://wiki.matriz.org/knowledge-base/triz/problem-solving-tools-5890/contradictions/physical-contradiction-6056/)
+- 알트슐러 재단(공식): https://www.altshuller.ru/world/eng/index.asp
+- 전체 대조 검증표·적대적 검증 기록·한계는 [10-triz-vs-fde.md](10-triz-vs-fde.md) 부록 참조.
 
 참고: "정전 ↔ 팔란티어 ↔ 카프" 매칭은 이 저장소의 종합 해석. 카프 발언 출처는 [04 출처](04-problem-solving-principles.md) 참조.

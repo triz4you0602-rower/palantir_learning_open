@@ -25,6 +25,8 @@ palantir_learning/
 │   ├── 07-ontology-politics-ethics.md # 온톨로지의 정치·윤리 (학술 연구)
 │   ├── 08-case-studies.md             # 실제 배포 사례집 (Airbus·Ferrari·Trinity…)
 │   ├── 09-onboarding-reading-intent.md# 신입 독서 목록의 의도 재구성 (무엇을 먼저 가르치나)
+│   ├── 10-triz-vs-fde.md              # TRIZ ↔ FDE 구조 비교 (공통점·차이·시사점·예측)
+│   ├── 11-triz-fde-primer.md          # ★ 트리즈를 몰라도 읽히는 입문 (쉬운 설명)
 │   ├── 98-external-resources.md      # 유사 목적 공개 자료 모음
 │   └── 99-glossary.md                # 용어집 (영어 병기)
 └── practice/             # 실습 (지식을 케이스에 적용)
