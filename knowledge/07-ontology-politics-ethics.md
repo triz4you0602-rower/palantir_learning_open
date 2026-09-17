@@ -28,7 +28,18 @@
 - → [04 "데이터 통합의 정치"](04-problem-solving-principles.md)·Karp의 *"문제는 조직적이다"* 가 여기서 **블로그에서 논문으로 격상**된다.
 
 ### 3. 수행성 (Performativity) ⭐
-시스템은 세계를 **표현(represent)** 하는 게 아니라, 사회기술적 과정을 통해 (범죄 같은) 현상을 **능동적으로 생산(produce)** 한다. Munn은 Annemarie Mol의 **"존재론적 정치(ontological politics)"** 를 적용.
+시스템은 세계를 **표현(represent)** 하는 게 아니라, 사회기술적 과정을 통해 (범죄 같은) 현상을 **능동적으로 생산(produce)** 한다.
+
+> 🔴 **❌ 정정 (2026-09-17, 원문 1차 대조 완료) — "Munn이 Mol의 존재론적 정치를 적용했다"는 서술은 오류였다.**
+> 사용자가 제공한 Munn(2017) 원문 PDF를 `pdftotext`로 전문 검색한 결과: **"Mol" 0회 · "ontological politics" 0회.** 서지 24건 어디에도 없다.
+>
+> **Munn의 실제 이론 틀은 레비 브라이언트(Levi Bryant)의 기계(machine) 존재론이다.** 본문 축자 — *"this text takes up the notion of **the machine theorized by Levi Bryant**."* 브라이언트의 세 질문(무엇이 흐르는가 / 어떻게 기능하는가 / **무엇이 생산되며** 그 결과 흐름과 기계는 어떻게 바뀌는가)이 분석의 뼈대이며, 서지에 Bryant(2011)·Bryant(2012)가 올라 있다.
+>
+> **따라서 위 "생산(produce)" 독법 자체는 유지된다 — 근거가 Mol이 아니라 Bryant일 뿐이다.** 브라이언트의 세 번째 질문이 정확히 그 지점이다.
+>
+> **오귀속의 발원지:** 병행 세션이 **Galis & Karlsson(2024)의 인용**을 지목했다(그 논문 제목 자체가 *"Ontological Politics in the Danish Police's POL-INTEL"*). 즉 **"존재론적 정치"는 Galis & Karlsson의 틀**이지 Munn의 것이 아니며, 이 문서는 2차 요약을 거치며 둘을 합쳐 버렸다.
+>
+> ⚠️ **교훈:** 이 문서 출처 절은 처음부터 *"인용문은 각 연구의 재인용"* 이라고 고지하고 있었다. **고지해 놓고 단정형으로 쓴 것**이 문제였다 — 재인용 표시는 면책이 아니라 **검증 대기 표시**다.
 
 - 즉: **범주를 고정하는 순간, 그 범주는 현실을 기술하는 동시에 생산한다.** ("우범 지역"으로 분류→순찰 집중→검거 증가→통계가 분류를 정당화하는 되먹임.)
 - 이건 우리 [게임의 온톨로지 빌더](../practice/game/ontology-builder.html)가 가르치지 않는 그림자면(面): 루프를 닫는 것이 **무엇을 생산하는가**를 물어야 한다.
@@ -84,6 +95,16 @@
 - **에이전트 가드레일:** 에이전트가 사용자 의도를 온톨로지 클래스에 먼저 매핑, 무효 요청은 생성 전 차단. *"LLM이 '고객'이 무엇인지 정하지 않는다. 온톨로지가 정한다. LLM은 온톨로지의 하류."* → [03 §7 환각의 벽](03-ontology.md)의 산업 일반화.
 - ⚠️ 비판적 각주: 이 산업 서사조차 [06 §5](06-ontology-critique.md)의 "부활은 LLM 소비자 때문" 재해석과 함께 읽을 것.
 
+## 부록: 공식 대조 검증표
+
+| 주장 | 판정 | 근거 |
+|---|---|---|
+| Munn(2017)이 Mol의 "존재론적 정치"를 적용 | ❌ **오류** | 원문 PDF 전문 검색: "Mol" 0회 · "ontological politics" 0회 (2026-09-17) |
+| Munn(2017)의 이론 틀 = **Bryant의 기계 존재론** | ✅ **1차** | 본문 축자 *"the notion of the machine theorized by Levi Bryant"* + 서지 2건 |
+| "표현이 아니라 생산한다"는 수행성 독법 | ✅ **유지** | 근거를 Mol→Bryant로 교체. 브라이언트의 세 질문 중 *"무엇이 생산되는가"* |
+| "존재론적 정치" 틀의 실제 사용자 | ✅ | **Galis & Karlsson(2024)** — 논문 제목에 명시 |
+| 그 외 §1·2·4~ 의 인용문 | ⚠️ **미대조** | 출처 절 고지대로 **재인용**. Munn 건이 드러났듯 **다른 항목도 검증 대기 상태**다 |
+
 ## 출처 (Sources)
 
 학술 연구(1차):
@@ -101,6 +122,8 @@
 
 이론(2차):
 - Bowker, G. & Star, S.L. *Sorting Things Out* — "분류는 정치다"
-- Mol, A. — "존재론적 정치(ontological politics)"
+- Mol, A. — "존재론적 정치(ontological politics)" ❌ **Munn에게 귀속하지 말 것** (§3 정정 참조). 이 개념을 팔란티어 연구에 쓴 것은 **Galis & Karlsson(2024)** 이며 논문 제목 자체가 *"Ontological Politics in the Danish Police's POL-INTEL"* 이다.
+- **Bryant, Levi** — 기계(machine) 존재론. **Munn(2017)의 실제 이론 틀.** 서지: "Two Types of Assemblages"(2011) · "Machinic Art: The Matter of Contradiction"(2012), 둘 다 Larval Subjects 블로그.
+- Munn(2017) 원문 대조 경위(2026-09-17): 웹 접근은 **4개 경로·도구 6종 전부 실패**(studiesincontrolsocieties.org · hcommons.org · researchdirect.westernsydney.edu.au · espace.library.uq.edu.au) → **사용자 제공 PDF로 해결.** 저널: *Studies In Control Societies* 2(1).
 
 출발 문서: `ontology_2026_정리.md` §4 (2026-07-15, 사용자 제공). ⚠️ 인용문은 각 연구의 재인용이며, 정확한 문면은 원논문 대조 시 정밀화 대상.
