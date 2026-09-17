@@ -385,6 +385,8 @@ AIP는 온톨로지를 LLM의 접지면으로 쓴다. ARIZ의 템플릿(미니�
 | 현장 → 코어 제품 되먹임 | ✅ **1차** | *"더 큰 기능 요청은 로드맵에 비추어 검증되고 편입되어야"* (메타포는 2차, 실질은 1차) |
 | 온톨로지 = **결정 중심** | ✅ **1차** | 공식 docs: *"기업의 **결정**을 표상한다, 단순히 데이터가 아니라"*, *"decision-centric Ontology"* |
 | Object Type / Link Type / **Action Type** | ✅ **1차** | **출처 정정(F48):** 근거는 「Why Ontology?」가 아니라 **전용 docs 페이지**들이며 [03 출처](03-ontology.md)에 이미 인용돼 있다 — `ontology/core-concepts` · `object-link-types/link-types-overview` · `action-types/overview` |
+| 온톨로지 스키마가 **3요소**(개체·관계·행동) | ⚠️ **단순화** | 공식 `ontology/core-concepts`는 **property를 포함해 4요소**를 정의한다. 3분 구조는 [03](03-ontology.md)을 따르는 저장소 관례 |
+| **대문자** 표기 "Object Type" | ⚠️ **관례** | 원문 표기는 **소문자**(*object type*). 대문자는 저장소 관례이며 docs 문면이 아니다 |
 | 「Why Ontology?」 페이지가 그 세 용어를 쓴다 | ❌ **오류(F48)** | 그 페이지는 소문자 일반명사(*"objects, properties, and links"*)만 쓴다. 내 WebFetch 요약이 *"sidebar navigation에서 참조됨"* 이라 알려줬는데 그 단서를 무시하고 **본문 근거로 승격**했다 |
 | "대시보드가 아니라 행동" | ✅ **1차** | *"실시간으로 결정이 내려질 때 **행동 루프를 닫는 것**이 운영 시스템과 분석 시스템을 가른다"* |
 | **Echo** = Deployment Strategist의 내부 호칭 | ⚠️→✅ **1차 축자** | 공식 블로그(2022): *"the Deployment Strategist, **known internally as 'Echo.'**"* (F37 해소) |
